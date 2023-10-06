@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Log in/Sign up screen animation</title>
+
+
+            <link rel="stylesheet" type="text/css" href="{% static 'main/css/signup.css' %}" />
+
+
+</head>
+
+<body>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+
+<div class="registration-cssave">
+    {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>Пароли не совпадают</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+    <form class="form-signin" method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <h1 class="text-center">Регистрация</h1>
+                    {{ form.username }} <br>
+                    {{ form.first_name}} <br>
+                    {{ form.last_name}} <br>
+                    {{ form.password }} <br>
+                    {{ form.repeat_password }}  <br>
+                    {{ form.position }}  <br>
+
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block create-account" type="submit">Продолжить</button>
+                            </div>
+                            <div class="container signin" id="sign-in">
+                                <p>У вас уже есть аккаунт? <br><a href="{% url 'signin' %}" id="sign-im">Войти</a></p>
+                            </div>
+
+        </form>
+</div>
+</body>
+</html>
+
+
+

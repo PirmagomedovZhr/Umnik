@@ -1,0 +1,34 @@
+{% extends 'main/admin/home.html' %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+            <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Наименование</th>
+                        <th>Описание</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for task in tasks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href="{% url 'project_reports' project_id=task.id %}">{{ task.title }}</a></td>
+                            <td>{{ task.task }}</td>
+                            <td>
+                                <form action="{% url 'archive_project' task.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Добавить в архив" />
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </main>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+html {
+  background-color:#fff;
+  background-blend-mode:overlay;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+  height:100%;
+}
+
+body {
+  background-color:transparent;
+}
+
+.registration-cssave{
+  padding:50px 0;
+}
+
+.registration-cssave form {
+  max-width:800px;
+  padding:30px 70px;
+  border-radius:10px;
+  box-shadow:2px 2px 15px rgba(1, 1, 1, 1);
+  background-color:#fff;
+}
+.registration-cssave form h1 {
+  padding:10px 30px;
+  font-weight: inherit;
+  transform: translate(6px,-40px);
+}
+
+
+#sign-in{
+border:none;
+padding:0;
+margin:0;
+font-size:20px;
+color:black;
+background-color:transparent;
+transform: translate(0px, -30px);
+text-align: center;
+}
+
+#sign-im{
+border:none;
+padding:0;
+margin:0;
+font-size:20px;
+color:green;
+background-color:transparent;
+transform: translate(0px, -30px);
+text-align: center;
+text-decoration: none !important;
+}
+
+.form-control {
+  transform: translate(6px,-50px);
+  border-radius:10px;
+  margin-bottom:25px;
+  padding:15px 30px;
+
+}
+.registration-cssave .alert-danger {
+    transform: translate(100px,400px);
+}
+
+.registration-cssave .create-account {
+  border-radius:10px;
+  padding:8px 45px;
+  font-size:27px;
+  transform: translate(6px,-70px);
+  font-weight:bold;
+  background-color:#13a818;
+  border:none;
+  color:white;
+  margin-top:20px;
+}
+

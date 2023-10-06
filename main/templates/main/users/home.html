@@ -1,0 +1,32 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1000, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/base.css' %}" />
+
+    {% block title %}
+    {% endblock %}
+    <title>Страница пользователя</title>
+</head>
+<body>
+    <header>
+        <h1>Дагестанский государственный технический университет</h1>
+    </header>
+    <nav>
+        <a href="#home">Главная</a>
+        <a href="#about">О нас</a>
+        <a href="#program">Учебная программа</a>
+        <a href="#contact">Контакты</a>
+        <a href="logout">Выйти</a>
+    </nav>
+    {% block content %}
+{% endblock %}
+
+</body>
+</html>
+
+
+

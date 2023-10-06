@@ -1,0 +1,33 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+<main class="main js-main">
+    <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Номер</th>
+              <th>Имя</th>
+              <th>Фамилия</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+                {% for user in inactive_users %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ user.first_name }}</td>
+                      <td>{{ user.last_name }}</td>
+                      <td>
+                          <form action="{% url 'activate_user' user.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="submit" value="Активировать" id="but">
+                          </form>
+                      </td>
+                    </tr>
+                {% endfor %}
+          </tbody>
+    </table>
+</main>
+{% endblock %}

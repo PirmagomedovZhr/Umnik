@@ -1,0 +1,32 @@
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+            <table class="tasks-table">
+        <thead>
+            <tr>
+                <th>Проект</th>
+                <th>Дата</th>
+                <th>Количество часов</th>
+                <th>Описание</th>
+            </tr>
+        </thead>
+                    <tbody>
+            {% for entry in time_entries %}
+            <tr>
+                <td>{{ project.title }}</td>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.hours_spent }}</td>
+                    <td>{{ entry.description }}</td>
+</tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Нет отчетов по выбранному проекту!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}ц

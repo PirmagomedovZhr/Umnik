@@ -1,0 +1,17 @@
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+        <div class="container">
+        <h1>{{ subsection.title }}</h1>
+        <div class="content-container">
+            {{ subsection.content|linebreaks }}
+        </div>
+        <div style="text-align:center;">
+        <a href="{% url 'subsection_list' subsection.section.id %}" class="button">Вернуться к подразделам</a>
+            </div>
+    </div>
+    </main>
+{% endblock %}

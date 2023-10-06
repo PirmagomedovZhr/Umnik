@@ -1,0 +1,57 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/time_spent.css' %}" />
+{% endblock %}
+{% block content %}
+<main class="main js-main">
+    <form method="get">
+        <label for="user_filter">Пользователь:</label>
+        <select name="user_filter" id="user_filter">
+            <option value="">--Выбрать--</option>
+            {% for user in users %}
+            <option value="{{ user.username }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="project_filter">Проект:</label>
+        <select name="project_filter" id="project_filter">
+            <option value="">--Выбрать--</option>
+            {% for project in projects %}
+            <option value="{{ project.title }}">{{ project.title }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Поиск</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Число</th>
+                <th>Пользователь</th>
+                <th>Проект</th>
+                <th>Потраченные часы</th>
+                <th>Описание</th>
+                <th>Общее количество часов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in time_spent_reports %}
+            <tr>
+                <td>{{ report.date }}</td>
+                <td>{{ report.user.username }}</td>
+                <td>{{ report.project.title }}</td>
+                <td>{{ report.hours_spent }}</td>
+                <td>{{ report.description }}</td>
+                <td>{{ report.all_hours }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

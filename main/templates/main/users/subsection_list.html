@@ -1,0 +1,22 @@
+
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+    <div class="container">
+        <h1>{{ subsections.first.section.title }}</h1>
+        <div class="sections">
+            {% for subsection in subsections %}
+            <div class="section">
+                <a href="{% url 'subsection_detail' subsection.id %}">{{ subsection.title }}</a>
+            </div>
+            {% endfor %}
+        </div>
+<div style="text-align:center;">
+    <a href="{% url 'section_list' %}" class="button">Вернуться к разделам</a>
+</div>
+
+    </main>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/users.css' %}" />
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+        <table>
+            <thead>
+                <tr>
+                    <th>Номер</th>
+                    <th>Логин</th>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Должность</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.first_name }}</td>
+                        <td>{{ user.last_name }}</td>
+                        <td>{{ user.position }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+{% endblock %}
+
+
+
+
+
+
+

@@ -1,0 +1,141 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1000, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/user_projects.css' %}" />
+<title>Страница администратора</title>
+</head>
+<body>
+<div class="out">
+        <sidebar class="side js-side">
+            <div class="side__inner">
+                <!-- header -->
+                <div class="side__header">
+                    <a href="{% url 'base' %}" class="side__logo">
+                        <div class="side__logo-text">{{admin_user.username}}</div>
+                    </a>
+
+                    <button class="side-toggle js-side-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect fill="#19262E" y="11" width="24" height="2" rx="1"/><rect fill="#19262E" y="4" width="24" height="2" rx="1"/><rect fill="#19262E" y="18" width="24" height="2" rx="1"/></svg>
+                    </button>
+                </div>
+                <!-- header -->
+
+                <!-- nav -->
+                <nav class="nav">
+                    <ul class="nav__list">
+                        <li class="nav__list-item">
+                            <a href="{% url 'base' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M23.121 9.069l-7.585-7.586a5.008 5.008 0 00-7.072 0L.879 9.069A2.978 2.978 0 000 11.19v9.817a3 3 0 003 3h18a3 3 0 003-3V11.19a2.978 2.978 0 00-.879-2.121zM15 22.007H9v-3.934a3 3 0 016 0zm7-1a1 1 0 01-1 1h-4v-3.934a5 5 0 00-10 0v3.934H3a1 1 0 01-1-1V11.19a1.008 1.008 0 01.293-.707L9.878 2.9a3.008 3.008 0 014.244 0l7.585 7.586a1.008 1.008 0 01.293.704z"/></svg>
+                                <span class="nav__list-link-text">Главная</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="/use" class="nav__list-link active" title="">
+                                <svg class="nav__list-link-icon" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M7.5 13A4.5 4.5 0 1112 8.5 4.505 4.505 0 017.5 13zm0-7A2.5 2.5 0 1010 8.5 2.5 2.5 0 007.5 6zM15 23v-.5a7.5 7.5 0 00-15 0v.5a1 1 0 002 0v-.5a5.5 5.5 0 0111 0v.5a1 1 0 002 0zm9-5a7 7 0 00-11.667-5.217 1 1 0 101.334 1.49A5 5 0 0122 18a1 1 0 002 0zm-6.5-9A4.5 4.5 0 1122 4.5 4.505 4.505 0 0117.5 9zm0-7A2.5 2.5 0 1020 4.5 2.5 2.5 0 0017.5 2z"/></svg>
+                                <span class="nav__list-link-text">Пользователи</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'archived_projects' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Архив</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'form' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Создать проект</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'projects' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Удалить проект</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'user_list' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Управление проектами</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'timespent' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Список отчетов</span>
+                            </a>
+                        </li>
+                        <li class="nav__list-item">
+                            <a href="{% url 'activate' %}" class="nav__list-link" title="">
+                                <svg class="nav__list-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M15.4 9.879l-4.589-4.586A1 1 0 009.4 6.707l4.586 4.586a1 1 0 010 1.414L9.4 17.293a1 1 0 001.415 1.414l4.585-4.586a3 3 0 000-4.242z"/></svg>
+                                <span class="nav__list-link-text">Запросы на регистрацию</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- nav -->
+
+                <div class="side__footer">
+                    <a class="logout-link" href="{% url 'logout' %}" title="Logout">
+                        <svg class="logout-link__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#19262E" d="M7 22H5a3 3 0 01-3-3V5a3 3 0 013-3h2a1 1 0 000-2H5a5.006 5.006 0 00-5 5v14a5.006 5.006 0 005 5h2a1 1 0 000-2z"/><path fill="#19262E" d="M18.538 18.707l4.587-4.586a3.007 3.007 0 000-4.242l-4.587-4.586a1 1 0 00-1.414 1.414L21.416 11H6a1 1 0 000 2h15.417l-4.293 4.293a1 1 0 101.414 1.414z"/></svg>
+                        <span class="logout-link__text">Выйти</span>
+                    </a>
+                </div>
+            </div>
+        </sidebar>
+
+<main class="main js-main">
+      <form method="post">
+            {% csrf_token %}
+            <label for="project-select">Проект:</label>
+            <select id="project-select" name="project">
+                  {% for project in available_projects %}
+                    <option value="{{ project.id }}">{{ project.title }}</option>
+                  {% endfor %}
+            </select>
+            <label for="due-date">Дата до:</label>
+            <input type="date" id="due-date" name="due_date">
+            <label for="user-select">Пользователь:</label>
+            <select id="user-select" name="user">
+                  <option value="{{ user.id }}" selected>{{ user.username }}</option>
+            </select>
+            <button type="submit">Назначить проект</button>
+      </form>
+      <br><br><br>
+      <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Наименование</th>
+                        <th>Срок истечения</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                 {% for project in projects %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ project.project.title }}</td>
+                            <td>{{ project.due_date }}</td>
+                            <td>
+                                <form action="{% url 'delete_project' project.id %}" method="post">
+                              {% csrf_token %}
+                              <button type="submit">Удалить проект</button>
+                        </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+</main>
+    </div>
+
+<script src="{% static 'main/js/app.js' %}"></script>
+</body>
+</html>
