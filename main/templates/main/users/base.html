@@ -6,6 +6,11 @@
     <main class="main js-main">
     <div class="container">
         <h1>Выберите нужный модуль обучения</h1>
+
+                    <!-- Кнопка для пробного теста -->
+            <div class="trial-test-button">
+                <a href="{% url 'start_test' test_id=3 %}" class="btn btn-primary">Пробный тест</a>
+            </div>
         <div class="sections">
             {% for section in sections %}
             <div class="section">

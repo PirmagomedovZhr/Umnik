@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Results</title>
+</head>
+<body>
+    <h1>Your Score: {{ score }}%</h1>
+    <p>Thank you for completing the test!</p>
+    <!-- Тут можно добавить ссылки на другие тесты или начальную страницу -->
+    <a href="{% url 'start_test' test_id=1 %}">Try Again</a> <!-- Пример ссылки на повторный тест -->
+    <a href="/">Go Home</a>
+</body>
+</html>

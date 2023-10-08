@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Question</title>
+</head>
+<body>
+    <h1>{{ question.text }}</h1>
+    <form method="post" action="{% url 'question_view' test_id=test_id question_id=question.id %}">
+        {% csrf_token %}
+        {% for answer in question.answers.all %}
+            <input type="checkbox" name="answers" value="{{ answer.id }}">
+            <label>{{ answer.text }}</label><br>
+        {% endfor %}
+        <input type="submit" value="Next">
+    </form>
+</body>
+</html>

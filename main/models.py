@@ -29,3 +29,30 @@ class Subsection(models.Model):
         # Возвращение названия подраздела в качестве строкового представления объекта
         return self.title
 
+
+class Test(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    # Можно добавить другие необходимые поля
+
+
+class Question(models.Model):
+    test = models.ForeignKey(Test, related_name='questions', on_delete=models.CASCADE)
+    text = models.TextField()
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
+    text = models.TextField()
+    is_correct = models.BooleanField(default=False)
+
+
+class UserTestResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    score = models.FloatField()
+
+    # Если нужно, добавьте дату прохождения или другие связанные поля
+
+    class Meta:
+        unique_together = ('user', 'test')
