@@ -105,66 +105,75 @@ def subsection_detail(request, subsection_id):
     return render(request, 'main/users/subsection_detail.html', {'subsection': subsection})
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Test, Question, Answer, UserTestResult
+from django import forms
+from .models import Question, Answer, User
+
+class QuizForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        questions = kwargs.pop('questions')
+        super(QuizForm, self).__init__(*args, **kwargs)
+        for index, question in enumerate(questions, start=1):
+            self.fields[f'question_{index}'] = forms.ModelChoiceField(
+                queryset=question.answers.all(),
+                widget=forms.RadioSelect,
+                empty_label=None,
+                label=question.text,
+            )
 
 
 @login_required
-def start_test_view(request, test_id):
-    test = get_object_or_404(Test, pk=test_id)
-    first_question = test.questions.first()
-    # Можете добавить логику для установки сессии или что-то подобное
-    return redirect('question_view', test_id=test.id, question_id=first_question.id)
-
-
-@login_required
-def question_view(request, test_id, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    next_question_id = Question.objects.filter(test__id=test_id, id__gt=question_id).first()
+def quiz_view(request):
+    if request.user.difficulty_block:
+        questions = Question.objects.filter(difficulty_block=request.user.difficulty_block)
+    else:
+        questions = Question.objects.filter(difficulty_block__isnull=True)
 
     if request.method == 'POST':
-        # Сохраняем ответы пользователя в сессии
-        user_answers = request.session.get('user_answers', [])
-        user_answers.append({
-            'question_id': question_id,
-            'answer_ids': request.POST.getlist('answers')
-        })
-        request.session['user_answers'] = user_answers
+        form = QuizForm(request.POST, questions=questions)
+        if form.is_valid():
+            correct_answers_count = sum(1 for q, a in form.cleaned_data.items() if a.is_correct)
+            percentage = (correct_answers_count / questions.count()) * 100
 
-        if next_question_id:
-            return redirect('question_view', test_id=test_id, question_id=next_question_id.id)
-        else:
-            return redirect('result_view', test_id=test_id)
+            current_block = request.user.difficulty_block
+            new_block = ''
 
-    return render(request, 'main/users/question.html', {'question': question, 'test_id': test_id})
+            # Блок сложности L1
+            if current_block == 'L1':
+                new_block = 'L2' if percentage >= 70 else 'L1'
+
+            # Блок сложности L2
+            elif current_block == 'L2':
+                new_block = 'M1' if percentage > 80 else 'L2' if percentage >= 70 else 'L1'
+
+            # Блок сложности M1
+            elif current_block == 'M1':
+                new_block = 'M2' if percentage > 80 else 'M1' if percentage >= 70 else 'L2'
+
+            # Блок сложности M2
+            elif current_block == 'M2':
+                new_block = 'H1' if percentage > 80 else 'M2' if percentage >= 70 else 'M1'
+
+            # Блок сложности H1
+            elif current_block == 'H1':
+                new_block = 'H2' if percentage > 80 else 'H1' if percentage >= 70 else 'M2'
+
+            # Блок сложности H2
+            elif current_block == 'H2':
+                new_block = 'H2' if percentage > 90 else 'H1'
+
+            # Сохранение нового блока сложности для пользователя
+            request.user.difficulty_block = new_block
+            request.user.save()
+
+            return redirect('result')
+    else:
+        form = QuizForm(questions=questions)
+
+    return render(request, 'main/users/quiz.html', {'form': form})
 
 
 @login_required
-def result_view(request, test_id):
-    # Получаем ответы пользователя из сессии и очищаем их
-    user_answers = request.session.get('user_answers', [])
-    request.session['user_answers'] = []
-
-    # Логика подсчета результатов...
-    score = calculate_score(user_answers)
-
-    # Сохраняем результаты в базе данных и отображаем их пользователю
-    UserTestResult.objects.create(user=request.user, test_id=test_id, score=score)
-    return render(request, 'main/users/result.html', {'score': score})
-
-
-def calculate_score(user_answers):
-    score = 0
-    for ua in user_answers:
-        question = Question.objects.get(pk=ua['question_id'])
-        correct_answers = question.answers.filter(is_correct=True).values_list('id', flat=True)
-
-        if set(map(int, ua['answer_ids'])) == set(correct_answers):
-            score += 1  # или ваша собственная логика подсчета баллов
-
-    # Преобразуем в проценты или используем свою логику вычисления процентов
-    percentage_score = (score / len(user_answers)) * 100
-    return percentage_score
+def result_view(request):
+    return render(request, 'main/users/result.html')

@@ -8,8 +8,18 @@ class User(AbstractUser):
         ('Студент', 'Студент')
     )
 
-    position = models.CharField('Должность', max_length=20, choices=positions, default='')
+    difficulty_blocks = (
+        ('L1', 'Низкий 1'),
+        ('L2', 'Низкий 2'),
+        ('M1', 'Средний 1'),
+        ('M2', 'Средний 2'),
+        ('H1', 'Высокий 1'),
+        ('H2', 'Высокий 2'),
+        ('', 'None'),
+    )
 
+    position = models.CharField('Должность', max_length=20, choices=positions, default='')
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='', blank=True)
 
 class Section(models.Model):
     # Определение модели данных для раздела
@@ -30,29 +40,24 @@ class Subsection(models.Model):
         return self.title
 
 
-class Test(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    # Можно добавить другие необходимые поля
-
-
 class Question(models.Model):
-    test = models.ForeignKey(Test, related_name='questions', on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.TextField('Текст вопроса')
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True, null=True)
+    # Другие необходимые поля
 
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
-    text = models.TextField()
-    is_correct = models.BooleanField(default=False)
+    text = models.TextField('Текст ответа')
+    is_correct = models.BooleanField('Правильный ответ', default=False)
 
+    # Другие необходимые поля
 
-class UserTestResult(models.Model):
+    def __str__(self):
+        return self.text
+
+class TestResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    score = models.FloatField()
-
-    # Если нужно, добавьте дату прохождения или другие связанные поля
-
-    class Meta:
-        unique_together = ('user', 'test')
+    correct_answers_count = models.IntegerField('Количество правильных ответов')
+    total_questions_count = models.IntegerField('Общее количество вопросов')
+    # Другие необходимые поля

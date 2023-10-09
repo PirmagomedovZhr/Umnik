@@ -4,10 +4,10 @@
     <title>Test Results</title>
 </head>
 <body>
-    <h1>Your Score: {{ score }}%</h1>
-    <p>Thank you for completing the test!</p>
-    <!-- Тут можно добавить ссылки на другие тесты или начальную страницу -->
-    <a href="{% url 'start_test' test_id=1 %}">Try Again</a> <!-- Пример ссылки на повторный тест -->
-    <a href="/">Go Home</a>
+
+  <h1>Тест пройден!</h1>
+  <h2>Ваш новый уровень: {{ user.get_difficulty_block_display }}</h2>
+  <a href="{% url 'quiz' %}">Пройти тест снова</a>
+
 </body>
 </html>

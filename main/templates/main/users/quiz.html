@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <h1>Привет, {{ user.username }}!</h1>
+  <h2>Ваш текущий уровень: {{ user.get_difficulty_block_display }}</h2>
+  <form method="post" action="{% url 'quiz' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Пройти тест">
+  </form>
+</body>
+</html>
+
