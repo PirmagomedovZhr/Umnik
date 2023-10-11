@@ -41,14 +41,25 @@ class Subsection(models.Model):
 
 
 class Question(models.Model):
+    QUESTION_TYPE_CHOICES = [
+        ('MC', 'Multiple Choice'),
+        ('TF', 'Text Field'),
+        # Добавьте другие типы по мере необходимости
+    ]
+
     text = models.TextField('Текст вопроса')
-    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True, null=True)
+    image = models.ImageField('Изображение вопроса', upload_to='question_images/', null=True, blank=True)
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True,
+                                        null=True)
+    question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='MC')
+
     # Другие необходимые поля
 
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
-    text = models.TextField('Текст ответа')
+    text = models.TextField('Текст ответа', blank=True,
+                            null=True)  # Текст может быть пустым для вопросов с текстовым полем
     is_correct = models.BooleanField('Правильный ответ', default=False)
 
     # Другие необходимые поля

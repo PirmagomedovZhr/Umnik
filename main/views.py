@@ -1,3 +1,4 @@
+
 from django.http import HttpResponseRedirect
 from .forms import SignUpForm, SignInForm
 from django.contrib.auth import logout
@@ -112,15 +113,21 @@ from .models import Question, Answer, User
 
 class QuizForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        questions = kwargs.pop('questions')
+        self.questions = kwargs.pop('questions')
         super(QuizForm, self).__init__(*args, **kwargs)
-        for index, question in enumerate(questions, start=1):
-            self.fields[f'question_{index}'] = forms.ModelChoiceField(
-                queryset=question.answers.all(),
-                widget=forms.RadioSelect,
-                empty_label=None,
-                label=question.text,
-            )
+        for index, question in enumerate(self.questions, start=1):
+            if question.question_type == 'MC':  # Multiple Choice Question
+                self.fields[f'question_{index}'] = forms.ModelChoiceField(
+                    queryset=question.answers.all(),
+                    widget=forms.RadioSelect,
+                    empty_label=None,
+                    label=question.text,
+                )
+            elif question.question_type == 'TF':  # Text Field Question
+                self.fields[f'question_{index}'] = forms.CharField(
+                    label=question.text,
+                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ'})
+                )
 
 
 @login_required
@@ -133,45 +140,49 @@ def quiz_view(request):
     if request.method == 'POST':
         form = QuizForm(request.POST, questions=questions)
         if form.is_valid():
-            correct_answers_count = sum(1 for q, a in form.cleaned_data.items() if a.is_correct)
-            percentage = (correct_answers_count / questions.count()) * 100
+            correct_answers_count = 0
+            for (question, answer_text_or_instance) in zip(questions, form.cleaned_data.values()):
+                if question.question_type == 'MC' and answer_text_or_instance.is_correct:
+                    correct_answers_count += 1
+                elif question.question_type == 'TF':
+                    correct_answer = question.answers.filter(is_correct=True).first()
+                    if correct_answer and correct_answer.text.strip().lower() == answer_text_or_instance.strip().lower():
+                        correct_answers_count += 1
 
+            percentage = (correct_answers_count / questions.count()) * 100
             current_block = request.user.difficulty_block
             new_block = ''
 
-            # Блок сложности L1
             if current_block == 'L1':
                 new_block = 'L2' if percentage >= 70 else 'L1'
-
-            # Блок сложности L2
             elif current_block == 'L2':
                 new_block = 'M1' if percentage > 80 else 'L2' if percentage >= 70 else 'L1'
-
-            # Блок сложности M1
             elif current_block == 'M1':
                 new_block = 'M2' if percentage > 80 else 'M1' if percentage >= 70 else 'L2'
-
-            # Блок сложности M2
             elif current_block == 'M2':
                 new_block = 'H1' if percentage > 80 else 'M2' if percentage >= 70 else 'M1'
-
-            # Блок сложности H1
             elif current_block == 'H1':
                 new_block = 'H2' if percentage > 80 else 'H1' if percentage >= 70 else 'M2'
-
-            # Блок сложности H2
             elif current_block == 'H2':
                 new_block = 'H2' if percentage > 90 else 'H1'
 
-            # Сохранение нового блока сложности для пользователя
             request.user.difficulty_block = new_block
             request.user.save()
 
+            # Передаем данные для отображения результата в шаблон через session (можно выбрать другой способ)
+            request.session['result_data'] = {
+                'correct_answers_count': correct_answers_count,
+                'percentage': percentage,
+                'new_block': new_block
+            }
+
             return redirect('result')
+
     else:
         form = QuizForm(questions=questions)
 
-    return render(request, 'main/users/quiz.html', {'form': form})
+    questions_and_forms = zip(questions, form)
+    return render(request, 'main/users/quiz.html', {'questions_and_forms': questions_and_forms})
 
 
 @login_required

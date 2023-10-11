@@ -88,6 +88,7 @@ class SignInForm(forms.Form):
 from django import forms
 from .models import Answer
 
+
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Answer
@@ -97,5 +98,4 @@ class QuestionForm(forms.ModelForm):
     def __init__(self, question, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['text'].queryset = Answer.objects.filter(question=question)
-
-
+        self.question = question

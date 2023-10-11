@@ -1,5 +1,5 @@
 local_up:
-	docker-compose build
+	#docker-compose build
 	docker-compose up
 
 local_down:
