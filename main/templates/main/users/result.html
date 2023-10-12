@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test Results</title>
-</head>
-<body>
-
-  <h1>Тест пройден!</h1>
-  <h2>Ваш новый уровень: {{ user.get_difficulty_block_display }}</h2>
-  <a href="{% url 'quiz' %}">Пройти тест снова</a>
-
-</body>
-</html>
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main-result">
+      <h2>Ваш уровень: {{ user.get_difficulty_block_display }}</h2>
+        <a href="{% url 'quiz' %}">Пройти тест</a>
+    </main>
+{% endblock %}
