@@ -1,12 +1,11 @@
-
 from django.http import HttpResponseRedirect
-from .forms import SignUpForm, SignInForm
-from django.contrib.auth import logout
-from django.contrib.auth import login, authenticate
+from .forms import SignUpForm, SignInForm, QuizForm
+from django.contrib.auth import login, authenticate, logout
 from django.views import View
-from .models import User
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import Section, Subsection, Question
+from django.contrib.auth.decorators import login_required
+
 
 
 class SignUpView(View):
@@ -20,7 +19,6 @@ class SignUpView(View):
             return render(request, 'main/signup.html', context={
                 'form': SignUpForm(),
         })
-
 
     def post(self, request, *args, **kwargs):
         form = SignUpForm(request.POST)
@@ -70,7 +68,8 @@ class BaseView(View):
             if request.user.is_superuser:
                 return render(request, self.template_superuser)
             else:
-                return render(request, self.template_user)
+                sections = Section.objects.all()
+                return render(request, self.template_user, {'sections': sections})
         else:
             return HttpResponseRedirect('/signin')
 
@@ -81,18 +80,7 @@ class LogoutUserView(View):
         return redirect('signin')
 
 
-
-# Импортирование необходимых модулей и моделей из приложения
-from django.shortcuts import render, get_object_or_404
-from .models import Section, Subsection
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Section
-
-
 @login_required
-
 def subsection_list(request, section_id):
     # Получение списка всех подразделов, связанных с определенным разделом
     subsections = Subsection.objects.filter(section=section_id)
@@ -106,28 +94,7 @@ def subsection_detail(request, subsection_id):
     return render(request, 'main/users/subsection_detail.html', {'subsection': subsection})
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django import forms
-from .models import Question, Answer, User
 
-class QuizForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.questions = kwargs.pop('questions')
-        super(QuizForm, self).__init__(*args, **kwargs)
-        for index, question in enumerate(self.questions, start=1):
-            if question.question_type == 'MC':  # Multiple Choice Question
-                self.fields[f'question_{index}'] = forms.ModelChoiceField(
-                    queryset=question.answers.all(),
-                    widget=forms.RadioSelect,
-                    empty_label=None,
-                    label=question.text,
-                )
-            elif question.question_type == 'TF':  # Text Field Question
-                self.fields[f'question_{index}'] = forms.CharField(
-                    label=question.text,
-                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ'})
-                )
 
 
 @login_required
@@ -176,7 +143,7 @@ def quiz_view(request):
                 'new_block': new_block
             }
 
-            return redirect('result')
+            return redirect('base')
 
     else:
         form = QuizForm(questions=questions)
@@ -187,4 +154,4 @@ def quiz_view(request):
 
 @login_required
 def result_view(request):
-    return render(request, 'main/users/result.html')
+    return render(request, 'main/users/base.html')

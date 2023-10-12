@@ -3,14 +3,12 @@
 {% block title %}
 {% endblock %}
 {% block content %}
-    <main class="main js-main">
+<main class="main js-main">
+          <h2>Ваш уровень: {{ user.get_difficulty_block_display }}</h2>
+        <a href="{% url 'quiz' %}">Пройти тест</a>
     <div class="container">
         <h1>Выберите нужный модуль обучения</h1>
 
-                    <!-- Кнопка для пробного теста -->
-            <div class="trial-test-button">
-                <a href="{% url 'start_test' test_id=3 %}" class="btn btn-primary">Пробный тест</a>
-            </div>
         <div class="sections">
             {% for section in sections %}
             <div class="section">
@@ -19,6 +17,6 @@
             {% endfor %}
         </div>
     </div>
+</main>
 
-    </main>
 {% endblock %}

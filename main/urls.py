@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (LogoutUserView, BaseView, SignInView, SignUpView, subsection_list, )
+from .views import (LogoutUserView, BaseView, SignInView, SignUpView, subsection_list, subsection_detail)
 from . import views
 
 urlpatterns = [
@@ -8,6 +8,6 @@ urlpatterns = [
     path('signin/', SignInView.as_view(), name='signin'),#Авторизация
     path('logout/', LogoutUserView.as_view(), name='logout'),#Выход
     path('section/<int:section_id>/', subsection_list, name='subsection_list'),
+    path('subsection/<int:subsection_id>/', subsection_detail, name='subsection_detail'),
     path('quiz/', views.quiz_view, name='quiz'),
-    path('result/', views.result_view, name='result'),
 ]

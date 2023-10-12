@@ -84,18 +84,20 @@ class SignInForm(forms.Form):
 
     )
 
-
-from django import forms
-from .models import Answer
-
-
-class QuestionForm(forms.ModelForm):
-    class Meta:
-        model = Answer
-        fields = ['text']
-        widgets = {'text': forms.RadioSelect}
-
-    def __init__(self, question, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['text'].queryset = Answer.objects.filter(question=question)
-        self.question = question
+class QuizForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.questions = kwargs.pop('questions')
+        super(QuizForm, self).__init__(*args, **kwargs)
+        for index, question in enumerate(self.questions, start=1):
+            if question.question_type == 'MC':  # Multiple Choice Question
+                self.fields[f'question_{index}'] = forms.ModelChoiceField(
+                    queryset=question.answers.all(),
+                    widget=forms.RadioSelect,
+                    empty_label=None,
+                    label=question.text,
+                )
+            elif question.question_type == 'TF':  # Text Field Question
+                self.fields[f'question_{index}'] = forms.CharField(
+                    label=question.text,
+                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ'})
+                )
