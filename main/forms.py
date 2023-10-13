@@ -169,3 +169,7 @@ class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ['text', 'is_correct']
+
+
+class TokenForm(forms.Form):
+    token = forms.CharField(label="Введите токен")

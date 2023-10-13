@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     <main class="main js-main-quiz">
-  <form method="post" action="{% url 'quiz' %}">
+  <form method="post" action="{% url 'quiz' disciplin_id %}">
     {% csrf_token %}
 {% for question, field in questions_and_forms %}
     <p>{{ question.text }}</p>

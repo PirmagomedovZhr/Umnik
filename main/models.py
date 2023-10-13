@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.urls import reverse
 
 class User(AbstractUser):
     positions = (
@@ -20,6 +20,7 @@ class User(AbstractUser):
 
     position = models.CharField('Должность', max_length=20, choices=positions, default='')
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='', blank=True)
+    disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
 
 
 class Groups(models.Model):
@@ -32,6 +33,8 @@ class Disciplin(models.Model):
     token = models.CharField(max_length=10)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def get_absolute_url(self):
+        return reverse('disciplin_detail', args=[str(self.id)])
 
 
 class Section(models.Model):

@@ -5,7 +5,7 @@
 {% block content %}
 <main class="main js-main">
           <h2>Ваш уровень: {{ user.get_difficulty_block_display }}</h2>
-        <a href="{% url 'quiz' %}">Пройти тест</a>
+
     <div class="container">
         <h1>Выберите нужный модуль обучения</h1>
 
@@ -17,7 +17,25 @@
             {% endfor %}
         </div>
     </div>
-    <a href="{% url 'quiz' %}">Пройти тест</a>
+
+
+
+    <form method="post" action="{% url 'base' %}">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Подключиться">
+</form>
+<!-- ... -->
+<!-- ... -->
+<div>
+    <h3>Ваши дисциплины:</h3>
+    <ul>
+        {% for discipline in user_disciplines %}
+            <li><a href="{% url 'disciplin_detail' disciplin_id=discipline.id %}">{{ discipline.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
 </main>
 
 {% endblock %}

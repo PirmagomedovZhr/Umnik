@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm
+from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404, render, redirect
@@ -68,10 +68,24 @@ class BaseView(View):
             if request.user.is_superuser:
                 return render(request, self.template_superuser)
             else:
+                form = TokenForm()
                 sections = Section.objects.all()
-                return render(request, self.template_user, {'sections': sections})
+                user_disciplines = request.user.disciplines.all()
+                return render(request, self.template_user, {'sections': sections, 'form': form, 'user_disciplines': user_disciplines})
         else:
             return HttpResponseRedirect('/signin')
+
+    def post(self, request):
+        form = TokenForm(request.POST)
+        if form.is_valid():
+            token = form.cleaned_data['token']
+            try:
+                discipline = Disciplin.objects.get(token=token)
+                request.user.disciplines.add(discipline)
+            except Disciplin.DoesNotExist:
+                pass  # обработка случая, когда дисциплины с таким токеном не существует
+            return redirect('base')  # замените 'base_view' на имя вашего URL-паттерна для этого представления
+
 
 
 class LogoutUserView(View):
@@ -97,12 +111,15 @@ def subsection_detail(request, subsection_id):
 
 
 
-@login_required
-def quiz_view(request):
+def quiz_view(request, disciplin_id):
+    disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+
+    # Отбираем вопросы, соответствующие сложности пользователя и выбранной дисциплине
     if request.user.difficulty_block:
-        questions = Question.objects.filter(difficulty_block=request.user.difficulty_block)
+        questions = Question.objects.filter(difficulty_block=request.user.difficulty_block, disciplin=disciplin)
     else:
-        questions = Question.objects.filter(difficulty_block__isnull=True)
+        questions = Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
+
 
     if request.method == 'POST':
         form = QuizForm(request.POST, questions=questions)
@@ -149,7 +166,8 @@ def quiz_view(request):
         form = QuizForm(questions=questions)
 
     questions_and_forms = zip(questions, form)
-    return render(request, 'main/users/quiz.html', {'questions_and_forms': questions_and_forms})
+    return render(request, 'main/users/quiz.html',
+                  {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
 
 
 @login_required
@@ -219,3 +237,8 @@ def create_answer(request, pk):
 
 def homesss(request):
     return render(request, 'main/homesss.html')
+
+
+def disciplin_detail_view(request, disciplin_id):
+    disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+    return render(request, 'main/users/disciplin_detail.html', {'disciplin': disciplin})
