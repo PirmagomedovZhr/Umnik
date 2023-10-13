@@ -10,4 +10,10 @@ urlpatterns = [
     path('section/<int:section_id>/', subsection_list, name='subsection_list'),
     path('subsection/<int:subsection_id>/', subsection_detail, name='subsection_detail'),
     path('quiz/', views.quiz_view, name='quiz'),
+    path('create_group/', views.create_group, name='create_group'),
+    path('create_discipline/', views.create_discipline, name='create_discipline'),
+    path('homesss/', views.homesss, name='homesss'),
+    path('create_question/', views.create_question, name='create_question'),
+    path('create_answer/<int:pk>/', views.create_answer, name='create_answer'),
+
 ]

@@ -21,6 +21,19 @@ class User(AbstractUser):
     position = models.CharField('Должность', max_length=20, choices=positions, default='')
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='', blank=True)
 
+
+class Groups(models.Model):
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_groups')
+
+class Disciplin(models.Model):
+    name = models.CharField(max_length=100)
+    groups = models.ForeignKey(Groups, on_delete=models.CASCADE)
+    token = models.CharField(max_length=10)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+
 class Section(models.Model):
     # Определение модели данных для раздела
     title = models.CharField(max_length=100)
@@ -52,8 +65,7 @@ class Question(models.Model):
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True,
                                         null=True)
     question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='MC')
-
-    # Другие необходимые поля
+    disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='questions')
 
 
 class Answer(models.Model):

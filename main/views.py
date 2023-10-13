@@ -1,9 +1,9 @@
 from django.http import HttpResponseRedirect
-from .forms import SignUpForm, SignInForm, QuizForm
+from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Section, Subsection, Question
+from .models import Section, Subsection, Question, Disciplin
 from django.contrib.auth.decorators import login_required
 
 
@@ -155,3 +155,67 @@ def quiz_view(request):
 @login_required
 def result_view(request):
     return render(request, 'main/users/base.html')
+
+
+
+
+def create_group(request):
+    if request.method == 'POST':
+        form = GroupForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.user = request.user
+            group.save()
+            return redirect('homesss')
+    else:
+        form = GroupForm()
+    return render(request, 'main/create_group.html', {'form': form})
+
+
+@login_required
+def create_discipline(request):
+    if request.method == 'POST':
+        form = DisciplineForm(request.POST, user=request.user)  # Добавьте user сюда
+        if form.is_valid():
+            discipline = form.save(commit=False)
+            discipline.user = request.user
+            discipline.save()
+            return redirect('homesss')
+    else:
+        form = DisciplineForm(user=request.user)
+    return render(request, 'main/create_discipline.html', {'form': form})
+
+
+from django.shortcuts import render, redirect
+from .forms import QuestionForm, AnswerForm
+from .models import Question
+
+
+def create_question(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            question = form.save()
+            return redirect('create_answer', pk=question.pk)
+    else:
+        form = QuestionForm()
+    return render(request, 'main/create_question.html', {'form': form})
+
+
+
+def create_answer(request, pk):
+    question = Question.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.question = question # Assigning the question to the answer
+            answer.save()
+            return redirect('create_answer', pk=question.pk) # Redirect to the same page for adding more answers
+    else:
+        form = AnswerForm()
+    return render(request, 'main/create_answer.html', {'form': form, 'question': question})
+
+
+def homesss(request):
+    return render(request, 'main/homesss.html')
