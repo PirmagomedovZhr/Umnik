@@ -1,5 +1,12 @@
 from django import forms
-from .models import User, Groups, Disciplin
+from .models import User, Groups, Disciplin, Topic
+
+
+class TopicForm(forms.ModelForm):
+    class Meta:
+        model = Topic
+        fields = ['title', 'content', 'disciplin']
+
 
 class SignUpForm(forms.Form):
     username = forms.CharField(

@@ -1,0 +1,17 @@
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    <main class="main js-main">
+        <div class="container">
+        <h1>{{ topic.title }}</h1>  <!-- Обратите внимание на изменение переменной с 'subsection' на 'topic' -->
+        <div class="content-container">
+            {{ topic.content|linebreaks }}  <!-- Аналогично -->
+        </div>
+        <div style="text-align:center;">
+        <a href="{% url 'base' %}" class="button">Вернуться к темам</a>  <!-- Изменено: возвращаемся назад к общему списку тем -->
+        </div>
+    </div>
+    </main>
+{% endblock %}

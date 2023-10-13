@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (LogoutUserView, BaseView, SignInView, SignUpView, subsection_list, subsection_detail)
+from .views import (LogoutUserView, BaseView, SignInView, SignUpView)
 from . import views
 
 urlpatterns = [
@@ -7,8 +7,7 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),#Регистрация
     path('signin/', SignInView.as_view(), name='signin'),#Авторизация
     path('logout/', LogoutUserView.as_view(), name='logout'),#Выход
-    path('section/<int:section_id>/', subsection_list, name='subsection_list'),
-    path('subsection/<int:subsection_id>/', subsection_detail, name='subsection_detail'),
+    path('topics/<int:topic_id>/', views.topic_detail, name='topic_detail'),  # Изменено здесь
     path('quiz/<int:disciplin_id>/', views.quiz_view, name='quiz'),
     path('create_group/', views.create_group, name='create_group'),
     path('create_discipline/', views.create_discipline, name='create_discipline'),
@@ -16,6 +15,6 @@ urlpatterns = [
     path('create_question/', views.create_question, name='create_question'),
     path('create_answer/<int:pk>/', views.create_answer, name='create_answer'),
     path('disciplin/<int:disciplin_id>/', views.disciplin_detail_view, name='disciplin_detail'),
-
+    path('create_topic/', views.create_topic, name='create_topic'),
     # ... другие пути ...
 ]

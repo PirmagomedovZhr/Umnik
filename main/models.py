@@ -37,22 +37,12 @@ class Disciplin(models.Model):
         return reverse('disciplin_detail', args=[str(self.id)])
 
 
-class Section(models.Model):
-    # Определение модели данных для раздела
-    title = models.CharField(max_length=100)
-
-    def __str__(self):
-        # Возвращение названия раздела в качестве строкового представления объекта
-        return self.title
-
-class Subsection(models.Model):
-    # Определение модели данных для подраздела
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+class Topic(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField(blank=True)
+    disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='topics')
 
     def __str__(self):
-        # Возвращение названия подраздела в качестве строкового представления объекта
         return self.title
 
 

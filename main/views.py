@@ -1,9 +1,9 @@
 from django.http import HttpResponseRedirect
-from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm
+from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Section, Subsection, Question, Disciplin
+from .models import Question, Disciplin, Topic
 from django.contrib.auth.decorators import login_required
 
 
@@ -69,9 +69,9 @@ class BaseView(View):
                 return render(request, self.template_superuser)
             else:
                 form = TokenForm()
-                sections = Section.objects.all()
+                topics = Topic.objects.all()  # Изменено здесь
                 user_disciplines = request.user.disciplines.all()
-                return render(request, self.template_user, {'sections': sections, 'form': form, 'user_disciplines': user_disciplines})
+                return render(request, self.template_user, {'topics': topics, 'form': form, 'user_disciplines': user_disciplines})
         else:
             return HttpResponseRedirect('/signin')
 
@@ -88,27 +88,15 @@ class BaseView(View):
 
 
 
+def topic_detail(request, topic_id):  # Переименовано для ясности
+    topic = Topic.objects.get(id=topic_id)  # Изменено здесь
+    return render(request, 'main/users/topic_detail.html', {'topic': topic})  # Изменено здесь
+
+
 class LogoutUserView(View):
     def get(self, request):
         logout(request)
         return redirect('signin')
-
-
-@login_required
-def subsection_list(request, section_id):
-    # Получение списка всех подразделов, связанных с определенным разделом
-    subsections = Subsection.objects.filter(section=section_id)
-    # Отображение списка подразделов в шаблоне 'main/subsection_list.html' с использованием функции render()
-    return render(request, 'main/users/subsection_list.html', {'subsections': subsections})
-
-def subsection_detail(request, subsection_id):
-    # Получение подробной информации о конкретном подразделе
-    subsection = get_object_or_404(Subsection, id=subsection_id)
-    # Отображение информации о подразделе в шаблоне 'main/subsection_detail.html' с использованием функции render()
-    return render(request, 'main/users/subsection_detail.html', {'subsection': subsection})
-
-
-
 
 
 def quiz_view(request, disciplin_id):
@@ -241,4 +229,17 @@ def homesss(request):
 
 def disciplin_detail_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
-    return render(request, 'main/users/disciplin_detail.html', {'disciplin': disciplin})
+    topics = disciplin.topics.all()
+    return render(request, 'main/users/disciplin_detail.html', {'disciplin': disciplin, 'topics': topics})
+
+
+
+def create_topic(request):
+    if request.method == 'POST':
+        form = TopicForm(request.POST)
+        if form.is_valid():
+            topic = form.save()
+            return redirect('homesss')
+    else:
+        form = TopicForm()
+    return render(request, 'main/create_topic.html', {'form': form})

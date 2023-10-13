@@ -11,5 +11,17 @@
     <h1>{{ disciplin.name }}</h1>
     <p>Some details about the discipline.</p>
     <a href="{% url 'quiz' disciplin_id=disciplin.id %}">Пройти тест</a>
+
+        <div class="container">
+        <h1>Выберите нужный модуль обучения</h1>
+
+        <div class="sections">  <!-- Изменено здесь -->
+            {% for topic in topics %}  <!-- Изменено здесь -->
+            <div class="section">  <!-- Изменено здесь -->
+                <a href="{% url 'topic_detail' topic.id %}">{{ topic.title }}</a>  <!-- Изменено здесь -->
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

@@ -1,9 +1,8 @@
 from django.contrib import admin
 from .models import User
-from .models import Section, Subsection, Question, Answer, TestResult, Groups, Disciplin
+from .models import Question, Answer, TestResult, Groups, Disciplin, Topic
 
-admin.site.register(Section)
-admin.site.register(Subsection)
+admin.site.register(Topic)
 admin.site.register(User)
 admin.site.register(Question)
 admin.site.register(Answer)
