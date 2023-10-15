@@ -1,20 +1,15 @@
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-</head>
-<body>
-    <h1>{{ disciplin.name }}</h1>
-    <p>Some details about the discipline.</p>
-    <a href="{% url 'quiz' disciplin_id=disciplin.id %}">Пройти тест</a>
-
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/disciplin.css' %}" />
+{% endblock %}
+{% block content %}
+<main class="main-disciplin">
+    <div class="button-test">
+    <a href="{% url 'quiz' disciplin_id=disciplin.id %}" class="glow-button">Пройти тест</a>
+    </div>
         <div class="container">
         <h1>Выберите нужный модуль обучения</h1>
-
         <div class="sections">  <!-- Изменено здесь -->
             {% for topic in topics %}  <!-- Изменено здесь -->
             <div class="section">  <!-- Изменено здесь -->
@@ -23,5 +18,14 @@
             {% endfor %}
         </div>
     </div>
-</body>
-</html>
+    </main>
+{% endblock %}
+
+
+
+
+
+
+
+
+

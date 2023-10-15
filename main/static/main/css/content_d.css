@@ -1,0 +1,52 @@
+
+.topic .content-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.topic .content-container h2,
+.topic .content-container h3,
+.topic .content-container h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.topic .content-container p {
+    margin-bottom: 1rem;
+}
+
+.topic .content-container ul,
+.topic .content-container ol {
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.topic .content-container blockquote {
+    border-left: 3px solid #ccc;
+    padding-left: 1rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.topic .content-container pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.topic .content-container code {
+    font-family: "Courier New", Courier, monospace;
+}
+
+.topic .content-container img {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1rem;
+}

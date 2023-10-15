@@ -3,27 +3,32 @@
 {% block title %}
 {% endblock %}
 {% block content %}
-<main class="main js-main">
-          <h2>Ваш уровень: {{ user.get_difficulty_block_display }}</h2>
-
-
-
+<main class="main-base">
     <form method="post" action="{% url 'base' %}">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Подключиться">
 </form>
-<!-- ... -->
-<!-- ... -->
-<div>
-    <h3>Ваши дисциплины:</h3>
-    <ul>
-        {% for discipline in user_disciplines %}
-            <li><a href="{% url 'disciplin_detail' disciplin_id=discipline.id %}">{{ discipline.name }}</a></li>
-        {% endfor %}
-    </ul>
+<div class="main_div">
+<ul class="disciplines-list">
+    {% for discipline in user_disciplines %}
+        <li class="discipline-card">
+            <a href="{% url 'disciplin_detail' disciplin_id=discipline.id %}">
+                <div class="discipline-image">
+                    <img src="{% static 'abd.png' %}" alt="Image">
+                    <img src="{% static 'a.jpg' %}" alt="Image">
+                </div>
+                <div class="discipline-info">
+                    <h4 class="discipline-title">{{ discipline.name }}</h4>
+                </div>
+            </a>
+        </li>
+    {% endfor %}
+</ul>
 </div>
-
-</main>
-
+    </main>
 {% endblock %}
+
+
+
+

@@ -1,16 +1,24 @@
 {% extends 'main/users/home.html' %}
 {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/content_d.css' %}" />
 {% block title %}
 {% endblock %}
 {% block content %}
-    <main class="main js-main">
+    <main class="topic">
         <div class="container">
         <h1>{{ topic.title }}</h1>  <!-- Обратите внимание на изменение переменной с 'subsection' на 'topic' -->
         <div class="content-container">
             {{ topic.content|linebreaks }}  <!-- Аналогично -->
         </div>
         <div style="text-align:center;">
-        <a href="{% url 'base' %}" class="button">Вернуться к темам</a>  <!-- Изменено: возвращаемся назад к общему списку тем -->
+        <button onclick="goBack()" class="button">Вернуться назад</button>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+
         </div>
     </div>
     </main>
