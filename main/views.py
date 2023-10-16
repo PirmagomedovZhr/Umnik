@@ -1,10 +1,12 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
-from django.shortcuts import get_object_or_404, render, redirect
-from .models import Question, Disciplin, Topic
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from .models import Disciplin, Topic
+from django.shortcuts import render, redirect
+from .forms import QuestionForm, AnswerForm
+from .models import Question
 
 
 
@@ -158,10 +160,9 @@ def quiz_view(request, disciplin_id):
                   {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
 
 
-@login_required
+
 def result_view(request):
     return render(request, 'main/users/base.html')
-
 
 
 
@@ -175,10 +176,23 @@ def create_group(request):
             return redirect('homesss')
     else:
         form = GroupForm()
-    return render(request, 'main/create_group.html', {'form': form})
+
+    if request.user.position == 'Преподаватель':
+        template_name = 'main/admin/create_group.html'
+        context = {'form': form}
+    elif request.user.position == 'Студент':
+        template_name = 'main/users/base.html'
+        topics = Topic.objects.all()
+        user_disciplines = request.user.disciplines.all()
+        context = {'form': form, 'topics': topics, 'user_disciplines': user_disciplines}
+    else:
+        return HttpResponseForbidden("У вас нет прав доступа к этой странице.")
+
+    return render(request, template_name, context)
 
 
-@login_required
+
+
 def create_discipline(request):
     if request.method == 'POST':
         form = DisciplineForm(request.POST, user=request.user)  # Добавьте user сюда
@@ -189,12 +203,9 @@ def create_discipline(request):
             return redirect('homesss')
     else:
         form = DisciplineForm(user=request.user)
-    return render(request, 'main/create_discipline.html', {'form': form})
+    return render(request, 'main/admin/create_discipline.html', {'form': form})
 
 
-from django.shortcuts import render, redirect
-from .forms import QuestionForm, AnswerForm
-from .models import Question
 
 
 def create_question(request):
@@ -205,7 +216,7 @@ def create_question(request):
             return redirect('create_answer', pk=question.pk)
     else:
         form = QuestionForm()
-    return render(request, 'main/create_question.html', {'form': form})
+    return render(request, 'main/admin/create_question.html', {'form': form})
 
 
 
@@ -220,11 +231,11 @@ def create_answer(request, pk):
             return redirect('create_answer', pk=question.pk) # Redirect to the same page for adding more answers
     else:
         form = AnswerForm()
-    return render(request, 'main/create_answer.html', {'form': form, 'question': question})
+    return render(request, 'main/admin/create_answer.html', {'form': form, 'question': question})
 
 
 def homesss(request):
-    return render(request, 'main/homesss.html')
+    return render(request, 'main/admin/homesss.html')
 
 
 def disciplin_detail_view(request, disciplin_id):
@@ -242,4 +253,4 @@ def create_topic(request):
             return redirect('homesss')
     else:
         form = TopicForm()
-    return render(request, 'main/create_topic.html', {'form': form})
+    return render(request, 'main/admin/create_topic.html', {'form': form})

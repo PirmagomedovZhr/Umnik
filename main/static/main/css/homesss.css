@@ -1,0 +1,31 @@
+.main-teacher {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #AFEEEE;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-teacher h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.main-teacher a {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.main-teacher a:hover {
+    background-color: #45a049;
+}

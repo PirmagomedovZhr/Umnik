@@ -1,0 +1,17 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/create_topic.css' %}" />
+{% endblock %}
+{% block content %}
+<main class="main-topics">
+    <h1>Создание лекции</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="for_button">
+            <button type="submit" class="create-group-btn">Создать</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

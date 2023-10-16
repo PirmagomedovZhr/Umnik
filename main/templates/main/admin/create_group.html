@@ -1,0 +1,15 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/group.css' %}" />
+{% endblock %}
+{% block content %}
+<main class="main-gr">
+<form method="post" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="for_button">   <button type="submit" class="create-group-btn">Создать</button></div>
+
+</form>
+</main>
+{% endblock %}

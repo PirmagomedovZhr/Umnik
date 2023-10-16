@@ -7,6 +7,13 @@ class TopicForm(forms.ModelForm):
         model = Topic
         fields = ['title', 'content', 'disciplin']
 
+    def __init__(self, *args, **kwargs):
+        super(TopicForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label  # используем метку поля как placeholder
+            field.label = ""  # убираем метку поля
+
 
 class SignUpForm(forms.Form):
     username = forms.CharField(
@@ -122,19 +129,37 @@ class QuizForm(forms.Form):
 
 
 class GroupForm(forms.ModelForm):
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': 'Введите название группы'}),
+        label=''  # это уберет метку 'name'
+    )
+
     class Meta:
         model = Groups
         fields = ['name']
+
 
 class DisciplineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(DisciplineForm, self).__init__(*args, **kwargs)
+
         self.fields['groups'].queryset = Groups.objects.filter(user=user)
+        self.fields['groups'].widget.attrs.update({
+            'class': 'custom-select',
+            'placeholder': 'Выберите группу',
+        })
+        self.fields['groups'].label = ""  # убираем метку
+
+        self.fields['name'].widget.attrs.update({'placeholder': 'Введите название'})  # placeholder для поля name
+        self.fields['name'].label = ""  # убираем метку
+
+        self.fields['token'].widget.attrs.update({'placeholder': 'Введите токен'})  # placeholder для поля token
+        self.fields['token'].label = ""  # убираем метку
 
     class Meta:
         model = Disciplin
-        fields = ['name', 'groups', 'token']
+        fields = ['name', 'token', 'groups' ]
 
 
 
@@ -143,14 +168,14 @@ from django import forms
 from .models import Question, Answer
 
 
-class QuestionForm(forms.ModelForm):
-    class Meta:
-        model = Question
-        fields = ['text', 'image', 'difficulty_block', 'question_type', 'disciplin']
-
-    def __init__(self, *args, **kwargs):
-        super(QuestionForm, self).__init__(*args, **kwargs)
-        self.fields['disciplin'].queryset = Disciplin.objects.none()
+# class QuestionForm(forms.ModelForm):
+#     class Meta:
+#         model = Question
+#         fields = ['text', 'image', 'difficulty_block', 'question_type', 'disciplin']
+#
+#     def __init__(self, *args, **kwargs):
+#         super(QuestionForm, self).__init__(*args, **kwargs)
+#         self.fields['disciplin'].queryset = Disciplin.objects.none()
 
 
 class QuestionForm(forms.ModelForm):
@@ -163,19 +188,41 @@ class QuestionForm(forms.ModelForm):
         to_field_name="name",
         label='Дисциплина',
         required=True,
-        widget=forms.Select
+        widget=forms.Select(attrs={'class': 'custom-select'})  # добавлен класс
     )
 
     def __init__(self, *args, **kwargs):
         super(QuestionForm, self).__init__(*args, **kwargs)
         self.fields['disciplin'].label_from_instance = self.label_from_instance
+        for field in self.fields.values():  # для каждого поля
+            field.widget.attrs['class'] = 'form-control'  # добавляем класс
+            if field.label:  # если у поля есть метка
+                field.widget.attrs['placeholder'] = field.label  # устанавливаем placeholder
+
 
     def label_from_instance(self, obj):
         return f"{obj.name} ({obj.groups.name})"
+
+
+
+
+
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ['text', 'is_correct']
+
+    def __init__(self, *args, **kwargs):
+        super(AnswerForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.CheckboxInput):  # Проверяем, является ли виджет чекбоксом
+                field.widget.attrs['class'] = 'form-checkbox'  # применяем другой класс
+            else:
+                field.widget.attrs['class'] = 'form-control'
+                field.widget.attrs['placeholder'] = field.label  # используем метку поля как placeholder
+                field.label = ""  # убираем метку поля
+
+
 
 
 class TokenForm(forms.Form):

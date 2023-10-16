@@ -1,0 +1,50 @@
+.main-answer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #AFEEEE;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-answer .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.main-answer button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.main-answer button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+.main-answer h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+
+
+.form-checkbox {
+    transform: scale(1.5);  /* увеличиваем размер чекбокса */
+    margin-right: 10px;     /* добавляем отступ справа */
+}
+
+
+
+.for_button {
+    text-align: center;
+}

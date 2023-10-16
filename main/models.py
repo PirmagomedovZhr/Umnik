@@ -27,6 +27,10 @@ class Groups(models.Model):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_groups')
 
+    def __str__(self):
+        return self.name
+
+
 class Disciplin(models.Model):
     name = models.CharField(max_length=100)
     groups = models.ForeignKey(Groups, on_delete=models.CASCADE)
@@ -36,10 +40,12 @@ class Disciplin(models.Model):
     def get_absolute_url(self):
         return reverse('disciplin_detail', args=[str(self.id)])
 
+    def __str__(self):
+        return self.name
 
 class Topic(models.Model):
-    title = models.CharField(max_length=100)
-    content = models.TextField(blank=True)
+    title = models.CharField('Название', max_length=100)
+    content = models.TextField('Текст', blank=True)
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='topics')
 
     def __str__(self):
@@ -48,16 +54,16 @@ class Topic(models.Model):
 
 class Question(models.Model):
     QUESTION_TYPE_CHOICES = [
-        ('MC', 'Multiple Choice'),
-        ('TF', 'Text Field'),
+        ('ОГ', 'Ответы с галочкой'),
+        ('ТО', 'Текстовый ответ'),
         # Добавьте другие типы по мере необходимости
     ]
 
     text = models.TextField('Текст вопроса')
-    image = models.ImageField('Изображение вопроса', upload_to='question_images/', null=True, blank=True)
+    image = models.ImageField('Изображение', upload_to='question_images/', null=True, blank=True)
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True,
                                         null=True)
-    question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='MC')
+    question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='ОГ')
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='questions')
 
 

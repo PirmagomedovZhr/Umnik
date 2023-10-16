@@ -1,0 +1,57 @@
+.main-gr {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #AFEEEE;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.for_button {
+    text-align: center;
+}
+
+/* Стили для кнопки */
+.main-gr .create-group-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.main-gr .create-group-btn:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid #4CAF50;
+}
+
+/* Стили для полей формы */
+.main-gr input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+.custom-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    appearance: none;  /* Убираем стандартный вид */
+    -moz-appearance: none;  /* Firefox */
+    -webkit-appearance: none;  /* Safari and Chrome */
+}
