@@ -1,30 +1,49 @@
+
+
 <!DOCTYPE html>
 {% load static %}
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дагестанский Государственный Технический Университет</title>
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/home.css' %}" />
-        {% block title %}
-    {% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    {% block title %} {% endblock %}
 </head>
+
 <body>
-    <header>
-    <div class="logo">
-        <img src="{% static 'afg.png' %}" alt="Логотип Университета">
+   <header>
+        <div class="logo">
+            <img src="{% static 'afg.png' %}" alt="Логотип Университета">
+        </div>
+        <div class="header-text">
+        <h1>УЧЕБНЫЙ ПОРТАЛ ДГТУ</h1>
+        <p>Разработан при финансовой поддержке гранта Главы Республики Дагестан,<br>полученного в 2022 году <br>(распоряжение № 190-рг от 27 декабря 2022 года)</p>
     </div>
-    <nav>
-        <ul>
-            <li><a href="{% url 'base' %}">Главная</a></li>
-            <li><a href="#">Дисциплины</a></li>
-            <li><a href="#">Мой профиль</a></li>
-            <li><a href="#">О нас</a></li>
-            <li><a href="#">Сайт ДГТУ</a></li>
-        </ul>
-    </nav>
-</header>
-    {% block content %}
+        <div class="logo-right">
+            <img src="{% static 'aaa.svg' %}" alt="Логотип Дагестана">
+        </div>
+    </header>
+
+    <div class="sub-navbar">
+        <nav>
+            <ul>
+                <li><a href="{% url 'base' %}">Главная</a></li>
+                <li><a href="#">Обучение</a></li>
+                <li><a href="#">База знаний</a></li>
+                <li><a href="dstu.ru">Результаты</a></li>
+            </ul>
+        </nav>
+    </div>
+
+        {% block content %}
         {% endblock %}
 </body>
+
 </html>
+
+
+
+

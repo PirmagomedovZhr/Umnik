@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (LogoutUserView, BaseView, SignInView, SignUpView)
+from .views import (LogoutUserView, BaseView, SignInView, SignUpView, DisciplinView)
 from . import views
 
 urlpatterns = [
@@ -16,5 +16,7 @@ urlpatterns = [
     path('create_answer/<int:pk>/', views.create_answer, name='create_answer'),
     path('disciplin/<int:disciplin_id>/', views.disciplin_detail_view, name='disciplin_detail'),
     path('create_topic/', views.create_topic, name='create_topic'),
+    path('test/', views.test_view, name='test'),
+    path('disciplins/', DisciplinView.as_view(), name='disciplin'),
     # ... другие пути ...
 ]

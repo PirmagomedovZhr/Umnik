@@ -62,18 +62,21 @@ class SignInView(View):
 
 
 class BaseView(View):
-    template_superuser = 'main/admin/base.html'
-    template_user = 'main/users/base.html'
+    template_name = 'main/users/base.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+
+class DisciplinView(View):
+    template_name = 'main/users/disciplin.html'
 
     def get(self, request):
         if request.user.is_authenticated:
-            if request.user.is_superuser:
-                return render(request, self.template_superuser)
-            else:
-                form = TokenForm()
-                topics = Topic.objects.all()  # Изменено здесь
-                user_disciplines = request.user.disciplines.all()
-                return render(request, self.template_user, {'topics': topics, 'form': form, 'user_disciplines': user_disciplines})
+            form = TokenForm()
+            user_disciplines = request.user.disciplines.all()
+            return render(request, self.template_name, {'form': form, 'user_disciplines': user_disciplines})
         else:
             return HttpResponseRedirect('/signin')
 
@@ -86,8 +89,7 @@ class BaseView(View):
                 request.user.disciplines.add(discipline)
             except Disciplin.DoesNotExist:
                 pass  # обработка случая, когда дисциплины с таким токеном не существует
-            return redirect('base')  # замените 'base_view' на имя вашего URL-паттерна для этого представления
-
+            return redirect('disciplin')
 
 
 def topic_detail(request, topic_id):  # Переименовано для ясности
@@ -254,3 +256,7 @@ def create_topic(request):
     else:
         form = TopicForm()
     return render(request, 'main/admin/create_topic.html', {'form': form})
+
+
+def test_view(request):
+    return render(request, 'main/users/test.html')

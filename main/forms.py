@@ -226,4 +226,4 @@ class AnswerForm(forms.ModelForm):
 
 
 class TokenForm(forms.Form):
-    token = forms.CharField(label="Введите токен")
+    token = forms.CharField(label="")

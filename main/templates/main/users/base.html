@@ -1,33 +1,47 @@
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
+
 {% endblock %}
 {% block content %}
-<main class="main-base">
-    <form method="post" action="{% url 'base' %}">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Подключиться">
-</form>
-<div class="main_div">
-<ul class="disciplines-list">
-    {% for discipline in user_disciplines %}
-        <li class="discipline-card">
-            <a href="{% url 'disciplin_detail' disciplin_id=discipline.id %}">
-                <div class="discipline-image">
-                    <img src="{% static 'abd.png' %}" alt="Image">
-                    <img src="{% static 'a.jpg' %}" alt="Image">
-                </div>
-                <div class="discipline-info">
-                    <h4 class="discipline-title">{{ discipline.name }}</h4>
-                </div>
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+<div class="content">
+    <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
+        <h2>ОБУЧЕНИЕ</h2>
+        <p>Мои курсы</p>
+        <img src="{% static 'a.jpg' %}" alt="Image">
+        <div class="button-wrapper">
+        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
 </div>
-    </main>
+    </div>
+
+    <div class="card" style="background-image: linear-gradient(to top, rgb(62, 141, 184), rgb(148, 180, 205));">
+        <h2>ДИСЦИПЛИНЫ</h2>
+        <p>Мои дисциплины</p>
+        <img src="{% static 'a.jpg' %}" alt="Image">
+        <div class="button-wrapper">
+        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
+</div>
+    </div>
+
+    <div class="card" style="background-image: linear-gradient(to top, rgb(52, 140, 204), rgb(103, 198, 230));">
+        <h2>РЕЗУЛЬТАТЫ</h2>
+        <p>Мои результаты</p>
+        <img src="{% static 'a.jpg' %}" alt="Image">
+      <div class="button-wrapper">
+        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
+</div>
+    </div>
+</div>
 {% endblock %}
+
+
+
+
+
+
+
+
+
 
 
 

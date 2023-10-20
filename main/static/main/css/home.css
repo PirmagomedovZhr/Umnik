@@ -2,305 +2,136 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #bfd1ff;
+    background-color: #white;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px; /* увеличено внутреннее пространство */
-    background-color: #2C3E50; /* изменён цвет фона */
-    color: #ECF0F1; /* изменён цвет текста */
-}
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 50px;
+            background-image: linear-gradient(to right, rgb(0, 125, 253), rgb(0, 160, 210));
+            margin-bottom: 10px;
+        }
 
-.logo img {
-    max-height: 100px; /* увеличено максимальное значение высоты */
-    width: auto; /* добавлено для сохранения пропорций */
-}
+        .logo img,
+        .logo-right img {
+            max-height: 100px;
+            width: auto;
+        }
 
-nav ul {
+        .logo-right {
+            order: 3; /* Помещает логотип справа */
+        }
+.sub-navbar nav ul {
     list-style-type: none;
-    padding: 0;
     display: flex;
     gap: 20px;
 }
 
-nav li a {
+.sub-navbar nav li a {
+margin-right: 40px;
     text-decoration: none;
-    color: #ECF0F1; /* изменён цвет текста */
-    font-size: 18px; /* увеличен размер шрифта */
-    font-weight: bold; /* утолщённый текст */
+    font-size: 24px;
+    font-weight: bold;
+    color: black; /* Указание черного цвета для текста ссылок */
 }
 
-nav li a:hover {
-    color: #BDC3C7; /* цвет текста при наведении */
-}
-
-.search input, .search button {
-    padding: 8px 12px; /* увеличено внутреннее пространство */
-    margin-left: 5px;
-    font-size: 16px; /* увеличен размер шрифта */
-}
-
-.search button {
-    background-color: #3498DB; /* цвет фона кнопки */
-    color: #FFFFFF; /* цвет текста кнопки */
-    border: none; /* убраны границы */
-    cursor: pointer; /* стиль курсора изменен на указатель */
-}
-
-.search button:hover {
-    background-color: #2980B9; /* цвет фона кнопки при наведении */
+.sub-navbar nav li a:hover {
+    color: #6a6a6a;
 }
 
 
-/* Общие стили для main */
-.main-base {
-    font-family: 'Roboto', sans-serif;
-    padding: 20px;
-    position: relative; /* Добавим, чтобы использовать абсолютное позиционирование внутри */
-}
-
-
-
-/* Стили для формы токена */
-.main-base form {
-    position: absolute; /* Абсолютное позиционирование */
-    top: 10px;
-    right: 10px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-}
-
-.main-base form input[type="text"] {
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
-.main-base form input[type="submit"] {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.main-base form input[type="submit"]:hover {
-    background-color: #45a049;
-}
-
-
-.main-base {
-    font-family: 'Roboto', sans-serif;
-    padding: 20px;
-    position: relative; /* Добавим, чтобы использовать абсолютное позиционирование внутри */
-}
-
-
-
-/* Стили для формы токена */
-.main-base form {
-    position: absolute; /* Абсолютное позиционирование */
-    top: 10px;
-    right: 10px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-}
-
-.main-base form input[type="text"] {
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
-.main-base form input[type="submit"] {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.main-base form input[type="submit"]:hover {
-    background-color: #45a049;
-}
-
-
-main .main_div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.sub-navbar {
+    background-color: #white;
+    padding: 2px;
     text-align: center;
+    margin-left: 80px; /* Добавлен отступ слева */
+    margin-right: 5px; /* Добавлен отступ справа */
+    border: 2px solid rgba(128, 128, 128, 0.5); /* Добавлена полупрозрачная серая рамка */
+margin-bottom: 30px;
 }
 
-main_div .disciplines-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+
+
+
+.content {
+    display: flex;
+    justify-content: center; /* выравнивание карточек по центру */
+    gap: 17px; /* расстояние между карточками */
+    margin-bottom: 5px;
 }
 
-.main_div .discipline-card {
-    background-color: #f5f5f5;
+.card {
+    width: 520px;
+    height: 670px;
     border-radius: 10px;
-    overflow: hidden;
-    margin: 15px 0;
-    transition: box-shadow 0.3s;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.main_div .discipline-card a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-    padding: 15px;
-}
-
-.main_div .discipline-image {
-    width: 100px; /* установите нужные размеры */
-    height: 100px;
-    background: #eee; /* placeholder цвет, пока изображение не загружено */
-    background-size: cover;
-    background-position: center;
-    border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    margin-right: 20px;
-}
-
-.main_div .discipline-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+.card:last-child {
+    margin-right: 0; /* убираем отступ справа у последней карточки */
 }
 
 
-.main_div .discipline-info h4 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.main_div .discipline-card:hover {
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-
-
-
-
-.main.js-main-quiz h1, h2 {
-    color: #333;
-}
-.main.js-main-quiz form {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    max-width: 700px;
-    margin: 20px 0;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-.main.js-main-quiz p {
-    margin-bottom: 10px;
-}
-.main.js-main-quiz img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 10px 0;
-}
-.main.js-main-quiz input[type="submit"] {
-    background-color: #4CAF50; /* Green */
-    border: none;
+.card h2 {
+    font-size: 50px;
+    margin-bottom: 0px; /* Отступ снизу для заголовка */
+    margin-left: 30px;
     color: white;
-    padding: 15px 32px;
+    margin-top: 20px;
+font-weight: normal;
+}
+
+.card p {
+margin-top: 10px;
+    font-size: 20px; /* Размер шрифта для текста */
+    margin-bottom: 20px; /* Отступ снизу для текста */
+    margin-left: 30px;
+    color: white;
+}
+
+.card img {
+    max-width: 100%; /* Максимальная ширина изображения */
+    height: 60%; /* Автоматическая высота изображения */
+    margin-bottom: 20px; /* Отступ снизу для изображения */
+
+}
+
+.card .button-wrapper button {
+    padding: 25px 120px; /* Отступы внутри кнопки */
+    font-size: 30px; /* Размер шрифта для текста кнопки */
+    cursor: pointer; /* Стиль курсора для кнопки */
+    border: none; /* Удаление границы кнопки */
+    border-radius: 15px; /* Скругление углов кнопки */
+    background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон для кнопки */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Добавлена полупрозрачная белая рамка */
+    color: #fff;
+    font-weight: bold;
+font-family: 'Nunito', sans-serif; /* Применение шрифта Nunito */
+}
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%; /* чтобы занимать всю ширину родительского элемента */
+
+}
+
+
+
+.header-text {
     text-align: center;
-    text-decoration: none;
-    display: block;
-    font-size: 16px;
-    margin: auto;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius: 8px;
-}
-.main.js-main-quiz input[type="submit"]:hover {
-    background-color: white;
-    color: black;
-    border: 1px solid #4CAF50;
-}
-.main.js-main-quiz .question-block {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    font-family: 'Nunito', sans-serif; /* Применение шрифта Nunito */
 }
 
-.main.js-main-quiz {
-    font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    }
+.header-text h1 {
+    font-size: 40px; /* или другой размер, который вам нравится */
+    margin: 0; /* убирает стандартные отступы */
+    color: white; /* или другой цвет, который вам нравится */
 
-
-
-/* content_d.css */
-
-.topic {
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 1200px; /* Увеличено с 800px до 1000px */
-    background-color: #f8f8f8;
-    border-radius: 8px;
 }
 
-.topic .container {
-    padding: 20px;
+.header-text p {
+    font-size: 22px; /* или другой размер, который вам нравится */
+    margin: 0; /* убирает стандартные отступы */
+    color: white; /* или другой цвет, который вам нравится */
 }
-
-.topic h1 {
-    font-size: 28px; /* Увеличено с 28px до 32px */
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.topic .content-container {
-    font-size: 18px; /* Увеличено с 18px до 20px */
-    color: #666;
-    line-height: 1.6;
-}
-
-.topic .button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.topic .button:hover {
-    background-color: #45a049;
-}
-
-
