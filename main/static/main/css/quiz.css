@@ -4,3 +4,84 @@ body {
     padding: 0;
     background-color: white;
 }
+
+
+.main.js-main-quiz {
+    font-family: Arial, sans-serif;
+    background-image: linear-gradient(to top, #3f51b1 0%, #5a55ae 13%, #7b5fac 25%, #8f6aae 38%, #a86aa4 50%, #cc6b8e 62%, #f18271 75%, #f3a469 87%, #f7c978 100%);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main.js-main-quiz h1, h2 {
+    color: #333;
+}
+
+.main.js-main-quiz form {
+    background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 700px;
+    margin: 20px 0;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.main.js-main-quiz p {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc; /* Добавлена линия между текстами */
+    padding-bottom: 10px; /* Добавлен отступ снизу для лучшего вида */
+}
+
+.main.js-main-quiz img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.main.js-main-quiz input[type="submit"] {
+  text-decoration: none;
+  display: inline-block;
+  padding: 15px 30px;
+  margin: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 40px 40px #1E90FF inset, 0 0 0 0 #F137A6;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: white;
+  transition: .15s ease-in-out;
+
+}
+
+.main.js-main-quiz input[type="submit"]:hover {
+  box-shadow: 0 0 10px 0 #F137A6 inset, 0 0 10px 4px #F137A6;
+  color: #F137A6;
+}
+
+.main.js-main-quiz .question-block {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.main.js-main-quiz form .buts{
+text-align: center;
+}
+
+.text-input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* Добавлено небольшое скругление углов */
+    margin-bottom: 10px; /* Добавлен нижний отступ */
+    font-size: 16px;
+}
+
+.text-input:focus {
+    border-color: #4CAF50; /* Изменение цвета границы при фокусе */
+    outline: none;
+}

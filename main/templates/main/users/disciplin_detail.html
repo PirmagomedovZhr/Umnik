@@ -1,31 +1,64 @@
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
-    <link rel="stylesheet" type="text/css" href="{% static 'main/css/disciplin.css' %}" />
 {% endblock %}
 {% block content %}
-<main class="main-disciplin">
-    <div class="button-test">
-    <a href="{% url 'quiz' disciplin_id=disciplin.id %}" class="glow-button">Пройти тест</a>
-    </div>
-        <div class="container">
-        <h1>Выберите нужный модуль обучения</h1>
-        <div class="sections">  <!-- Изменено здесь -->
+<main class="main-disciplins">
+        <div class="containers">
+        <div class="sectionss">  <!-- Изменено здесь -->
             {% for topic in topics %}  <!-- Изменено здесь -->
-            <div class="section">  <!-- Изменено здесь -->
+            <div class="sections">  <!-- Изменено здесь -->
                 <a href="{% url 'topic_detail' topic.id %}">{{ topic.title }}</a>  <!-- Изменено здесь -->
             </div>
             {% endfor %}
         </div>
     </div>
     </main>
+<style>.main-disciplins {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 0;
+}
+
+.containers {
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+
+.sectionss {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    justify-content: center;
+}
+
+.sections {
+    background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.sections a {
+    display: block;
+    padding: 50px 20px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.2s ease-in-out;
+}
+
+.sections:hover {
+    transform: scale(1.05);
+}
+
+.sections a:hover {
+    color: #e44d26;
+}
+</style>
 {% endblock %}
-
-
-
-
-
-
-
-
-

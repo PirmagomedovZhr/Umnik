@@ -54,16 +54,16 @@ class Topic(models.Model):
 
 class Question(models.Model):
     QUESTION_TYPE_CHOICES = [
-        ('ОГ', 'Ответы с галочкой'),
-        ('ТО', 'Текстовый ответ'),
-        # Добавьте другие типы по мере необходимости
+        ('MC', 'Ответы с галочкой'),
+        ('TF', 'Текстовый ответ'),
+
     ]
 
     text = models.TextField('Текст вопроса')
     image = models.ImageField('Изображение', upload_to='question_images/', null=True, blank=True)
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, blank=True,
                                         null=True)
-    question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='ОГ')
+    question_type = models.CharField('Тип вопроса', max_length=2, choices=QUESTION_TYPE_CHOICES, default='MC')
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='questions')
 
 

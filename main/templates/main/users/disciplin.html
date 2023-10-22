@@ -30,7 +30,7 @@
     <nav>
         <div class="nav-left">
             <ul>
-                <li><a href="{% url 'base' %}">Главная</a></li>
+                <li><a href="#">Главная</a></li>
                 <li><a href="#">Обучение</a></li>
                 <li><a href="#">База знаний</a></li>
                 <li><a href="dstu.ru">Результаты</a></li>
@@ -92,7 +92,8 @@
             <p></p>
             <img src="{% static 'a.jpg' %}" alt="Image">
             <div class="button-wrapper">
-                <button onclick="location.href='{% url 'disciplin_detail' disciplin_id=discipline.id %}'">ПЕРЕЙТИ</button>
+<button onclick="location.href='{% url 'ladder' discipline.id %}'">ПЕРЕЙТИ</button>
+
             </div>
         </div>
         {% endfor %}

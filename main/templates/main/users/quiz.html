@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
 {% endblock %}
 {% block content %}
+
     <main class="main js-main-quiz">
   <form method="post" action="{% url 'quiz' disciplin_id %}">
     {% csrf_token %}
@@ -18,7 +19,9 @@
 {% endfor %}
 
 <br><br>
-    <input type="submit" value="Пройти тест">
+      <div class="buts">
+    <input type="submit" value="Завершить тест">
+          </div>
   </form>
     </main>
 {% endblock %}

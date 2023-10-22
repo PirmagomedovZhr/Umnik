@@ -61,11 +61,11 @@ class SignInView(View):
         })
 
 
-class BaseView(View):
-    template_name = 'main/users/base.html'
+class LadderView(View):
+    template_name = 'main/users/ladder.html'
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def get(self, request, disciplin_id):
+        return render(request, self.template_name, {'disciplin_id': disciplin_id})
 
 
 
@@ -156,6 +156,7 @@ def quiz_view(request, disciplin_id):
 
     else:
         form = QuizForm(questions=questions)
+
 
     questions_and_forms = zip(questions, form)
     return render(request, 'main/users/quiz.html',

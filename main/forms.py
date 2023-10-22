@@ -123,9 +123,8 @@ class QuizForm(forms.Form):
             elif question.question_type == 'TF':  # Text Field Question
                 self.fields[f'question_{index}'] = forms.CharField(
                     label=question.text,
-                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ'})
+                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ', 'class': 'text-input'})
                 )
-
 
 
 class GroupForm(forms.ModelForm):

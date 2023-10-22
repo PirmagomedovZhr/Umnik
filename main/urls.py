@@ -1,9 +1,11 @@
 from django.urls import path
-from .views import (LogoutUserView, BaseView, SignInView, SignUpView, DisciplinView)
+from .views import (LogoutUserView, LadderView, SignInView, SignUpView, DisciplinView)
 from . import views
 
 urlpatterns = [
-    path('', BaseView.as_view(), name='base'),#Главная
+
+    #path('', BaseView.as_view(), name='base'),#Главная,
+    path('ladder/', LadderView.as_view(), name='ladder'),
     path('signup/', SignUpView.as_view(), name='signup'),#Регистрация
     path('signin/', SignInView.as_view(), name='signin'),#Авторизация
     path('logout/', LogoutUserView.as_view(), name='logout'),#Выход
@@ -18,5 +20,7 @@ urlpatterns = [
     path('create_topic/', views.create_topic, name='create_topic'),
     path('test/', views.test_view, name='test'),
     path('disciplins/', DisciplinView.as_view(), name='disciplin'),
+path('disciplin/<int:disciplin_id>/ladder/', views.LadderView.as_view(), name='ladder'),
+
     # ... другие пути ...
 ]
