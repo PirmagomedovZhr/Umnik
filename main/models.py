@@ -83,3 +83,5 @@ class TestResult(models.Model):
     correct_answers_count = models.IntegerField('Количество правильных ответов')
     total_questions_count = models.IntegerField('Общее количество вопросов')
     # Другие необходимые поля
+
+

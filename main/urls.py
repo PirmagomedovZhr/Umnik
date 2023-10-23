@@ -21,6 +21,8 @@ urlpatterns = [
     path('test/', views.test_view, name='test'),
     path('disciplins/', DisciplinView.as_view(), name='disciplin'),
 path('disciplin/<int:disciplin_id>/ladder/', views.LadderView.as_view(), name='ladder'),
+    path('chat/', views.chat, name='chat'),
+    path('ajax/', views.Ajax, name='ajax'),
 
     # ... другие пути ...
 ]

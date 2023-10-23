@@ -7,6 +7,11 @@ from .models import Disciplin, Topic
 from django.shortcuts import render, redirect
 from .forms import QuestionForm, AnswerForm
 from .models import Question
+from django.shortcuts import render
+from .models import *
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import openai
 
 
 
@@ -152,7 +157,7 @@ def quiz_view(request, disciplin_id):
                 'new_block': new_block
             }
 
-            return redirect('base')
+            return redirect('disciplin')
 
     else:
         form = QuizForm(questions=questions)
@@ -261,3 +266,31 @@ def create_topic(request):
 
 def test_view(request):
     return render(request, 'main/users/test.html')
+
+
+
+def chat(request):
+    return render(request, 'main/chat.html'
+    )
+
+@csrf_exempt
+def Ajax(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest': # Check if request is Ajax
+
+        text = request.POST.get('text')
+        print(text)
+
+        openai.api_key = "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" # Here you have to add your api key.
+        res = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": f"{text}"}
+        ]
+        )
+
+        response = res.choices[0].message["content"]
+        print(response)
+
+
+        return JsonResponse({'data': response,})
+    return JsonResponse({})
