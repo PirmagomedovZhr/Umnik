@@ -85,3 +85,9 @@ class TestResult(models.Model):
     # Другие необходимые поля
 
 
+class QuizResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE)
+    correct_answers_count = models.PositiveIntegerField()
+    percentage = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)

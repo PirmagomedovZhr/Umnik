@@ -157,6 +157,14 @@ def quiz_view(request, disciplin_id):
                 'new_block': new_block
             }
 
+            quiz_result = QuizResult(
+                user=request.user,
+                disciplin=disciplin,
+                correct_answers_count=correct_answers_count,
+                percentage=percentage
+            )
+            quiz_result.save()
+
             return redirect('disciplin')
 
     else:
@@ -166,6 +174,16 @@ def quiz_view(request, disciplin_id):
     questions_and_forms = zip(questions, form)
     return render(request, 'main/users/quiz.html',
                   {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
+
+
+
+from .models import QuizResult
+
+def discipline_results_view(request, disciplin_id):
+    disciplin = Disciplin.objects.get(id=disciplin_id)
+    results = QuizResult.objects.filter(user=request.user, disciplin=disciplin)
+
+    return render(request, 'main/users/discipline_results.html', {'disciplin': disciplin, 'results': results})
 
 
 

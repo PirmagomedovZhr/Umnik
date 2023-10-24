@@ -23,6 +23,7 @@ urlpatterns = [
 path('disciplin/<int:disciplin_id>/ladder/', views.LadderView.as_view(), name='ladder'),
     path('chat/', views.chat, name='chat'),
     path('ajax/', views.Ajax, name='ajax'),
+    path('discipline_results/<int:disciplin_id>/', views.discipline_results_view, name='discipline_results'),
 
     # ... другие пути ...
 ]
