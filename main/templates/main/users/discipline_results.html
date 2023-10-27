@@ -2,27 +2,61 @@
 {% load static %}
 {% block title %}
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {% endblock %}
 {% block content %}
 <div class="content">
-    <h2>Результаты тестов по дисциплине: {{ disciplin.name }}</h2>
-    <table>
-        <tr>
-            <th>Дата</th>
-            <th>Правильных ответов</th>
-            <th>Процент правильных ответов</th>
-        </tr>
+    <div class="chart-container">
         {% for result in results %}
-        <tr>
-            <td>{{ result.date }}</td>
-            <td>{{ result.correct_answers_count }}</td>
-            <td>{{ result.percentage }}%</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">Нет результатов тестов по этой дисциплине.</td>
-        </tr>
+        <div class="result-chart">
+            <h3>Результаты для {{ result.date }}</h3>
+            <canvas id="testResultsChart_{{ forloop.counter }}" width="600" height="400"></canvas>
+        </div>
         {% endfor %}
-    </table>
+    </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% for result in results %}
+var ctx{{ forloop.counter }} = document.getElementById('testResultsChart_{{ forloop.counter }}').getContext('2d');
+var data{{ forloop.counter }} = {
+    labels: ['Процент правильных ответов'],
+    datasets: [{
+        label: 'Процент правильных ответов',
+        data: [{{ result.percentage }}],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+    }]
+};
+var myChart{{ forloop.counter }} = new Chart(ctx{{ forloop.counter }}, {
+    type: 'bar',
+    data: data{{ forloop.counter }},
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100 // Установите максимальное значение по вертикали в 100%
+            }
+        }
+    }
+});
+{% endfor %}
+</script>
+<style>
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.result-chart {
+    text-align: center;
+}
+</style>
 {% endblock %}
+
+
+
