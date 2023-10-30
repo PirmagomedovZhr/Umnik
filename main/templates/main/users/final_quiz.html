@@ -1,0 +1,35 @@
+{% extends 'main/users/home.html' %}
+{% load static %}
+
+{% block title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <main class="main js-main-final-quiz">
+        <form method="post" action="{% url 'final_quiz' disciplin.id %}">
+            {% csrf_token %}
+            {% for question in form %}
+                <p>{{ question.label }}</p>
+                {% if question.field.widget.input_type == 'radio' %}
+                    <ul>
+                        {% for choice in question.field.queryset %}
+                            <li>
+                                <input type="radio" name="{{ question.name }}" value="{{ choice.id }}">
+                                {{ choice }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <input type="{{ question.field.widget.input_type }}" name="{{ question.name }}" value="{{ question.value }}">
+                    {% if question.image %}
+                        <img src="{{ question.image.url }}" alt="{{ question.label }}">
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <div class="buts">
+                <input type="submit" value="Завершить финальный тест">
+            </div>
+        </form>
+    </main>
+{% endblock %}

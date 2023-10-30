@@ -15,11 +15,11 @@ class User(AbstractUser):
         ('M2', 'Средний 2'),
         ('H1', 'Высокий 1'),
         ('H2', 'Высокий 2'),
-        ('', 'None'),
+        ('NN', 'Вводный'),
     )
 
     position = models.CharField('Должность', max_length=20, choices=positions, default='')
-    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='', blank=True)
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='Вводный', blank=True)
     disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
 
 
@@ -78,11 +78,7 @@ class Answer(models.Model):
     def __str__(self):
         return self.text
 
-class TestResult(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    correct_answers_count = models.IntegerField('Количество правильных ответов')
-    total_questions_count = models.IntegerField('Общее количество вопросов')
-    # Другие необходимые поля
+
 
 
 class QuizResult(models.Model):

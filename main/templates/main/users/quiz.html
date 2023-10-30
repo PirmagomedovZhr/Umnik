@@ -19,9 +19,11 @@
 {% endfor %}
 
 <br><br>
-      <div class="buts">
+<div class="buts">
     <input type="submit" value="Завершить тест">
-          </div>
+</div>
+<a href="{% url 'final_quiz' disciplin_id %}" class="final-quiz-button">Перейти к финальному тесту</a>
+
   </form>
     </main>
 {% endblock %}

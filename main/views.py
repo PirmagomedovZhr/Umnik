@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm
+from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm, QuizFinalForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404
@@ -132,9 +132,10 @@ def quiz_view(request, disciplin_id):
 
             percentage = (correct_answers_count / questions.count()) * 100
             current_block = request.user.difficulty_block
-            new_block = ''
-
-            if current_block == 'L1':
+            new_block = 'NN'
+            if current_block == 'NN':
+                new_block = 'H1' if percentage >= 95 else 'L1' if percentage >= 70 else 'M1'
+            elif current_block == 'L1':
                 new_block = 'L2' if percentage >= 70 else 'L1'
             elif current_block == 'L2':
                 new_block = 'M1' if percentage > 80 else 'L2' if percentage >= 70 else 'L1'
@@ -312,3 +313,54 @@ def Ajax(request):
 
         return JsonResponse({'data': response,})
     return JsonResponse({})
+
+
+
+import random
+import itertools
+
+class FinalQuizView(View):
+    template_name = 'main/users/final_quiz.html'
+
+    def get(self, request, disciplin_id):
+        disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+        blocks = User.difficulty_blocks
+
+        selected_questions = []
+        for block in blocks:
+            # Выбираем 20 случайных вопросов из текущего блока
+            block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
+            print(f"Block: {block}, Questions: {block_questions}")
+            selected_block_questions = random.sample(list(block_questions), min(20, block_questions.count()))
+            selected_questions.extend(selected_block_questions)
+
+        # Перемешиваем вопросы, чтобы они были в случайном порядке
+        random.shuffle(selected_questions)
+
+        return render(request, self.template_name, {'disciplin': disciplin, 'questions': selected_questions})
+
+
+
+class FinalQuizView(View):
+    template_name = 'main/users/final_quiz.html'
+
+    def get(self, request, disciplin_id):
+        disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+
+        # Получаем все вопросы по указанной дисциплине
+        all_questions = Question.objects.filter(disciplin=disciplin)
+
+        # Выбираем по 20 вопросов из каждого блока
+        selected_questions = []
+        for block_code, block_name in User.difficulty_blocks:
+            block_questions = all_questions.filter(difficulty_block=block_code)
+            selected_block_questions = random.sample(list(block_questions), min(20, block_questions.count()))
+            selected_questions.extend(selected_block_questions)
+
+        # Перемешиваем вопросы
+        random.shuffle(selected_questions)
+
+        # Создаем форму и передаем в нее все вопросы и ответы
+        form = QuizForm(questions=selected_questions)
+
+        return render(request, self.template_name, {'disciplin': disciplin, 'form': form})
