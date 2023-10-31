@@ -1,36 +1,33 @@
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
-
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="{% static 'my/js/app.js' %}" defer></script>
+	<script src="{% static 'my/libs/rain.js' %}" defer></script>
+<link rel="stylesheet" type="text/css" href="{% static 'my/css/main.css' %}" />
 {% endblock %}
 {% block content %}
-<div class="content">
-    <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
-        <h2>ОБУЧЕНИЕ</h2>
-        <p>Мои курсы</p>
-        <img src="{% static 'a.jpg' %}" alt="Image">
-        <div class="button-wrapper">
-        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
-</div>
-    </div>
-
-    <div class="card" style="background-image: linear-gradient(to top, rgb(62, 141, 184), rgb(148, 180, 205));">
-        <h2>ДИСЦИПЛИНЫ</h2>
-        <p>Мои дисциплины</p>
-        <img src="{% static 'a.jpg' %}" alt="Image">
-        <div class="button-wrapper">
-        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
-</div>
-    </div>
-
-    <div class="card" style="background-image: linear-gradient(to top, rgb(52, 140, 204), rgb(103, 198, 230));">
-        <h2>РЕЗУЛЬТАТЫ</h2>
-        <p>Мои результаты</p>
-        <img src="{% static 'a.jpg' %}" alt="Image">
-      <div class="button-wrapper">
-        <button onclick="location.href='your_link_here'">ПЕРЕЙТИ</button>
-</div>
-    </div>
+<div class="mmm">
+	<section class="layers">
+		<div class="layers__container">
+			<div class="layers__item layer-1" style="background-image: url('{% static 'my/img/layer-1.jpg' %}');"></div>
+			<div class="layers__item layer-2" style="background-image: url(img/layer-2.png);"></div>
+			<div class="layers__item layer-3">
+				<div class="hero-content">
+					<h1>УЧЕБНЫЙ ПОРТАЛ <span>ДГТУ</span></h1>
+					<div class="hero-content__p">КУРСЫ НА ПЛАТФОРМЕ АДАПТИВНОГО <br> НЕЙРОСЕТЕВОГО ОБУЧЕНИЯ’</div>
+				</div>
+			</div>
+			<div class="layers__item layer-4">
+				<canvas class="rain"></canvas>
+			</div>
+			<div class="layers__item layer-5" style="background-image: url(img/layer-5.png);"></div>
+			<div class="layers__item layer-6" style="background-image: url('{% static 'my/img/layer-6.png' %}');"></div>
+		</div>
+	</section>
 </div>
 {% endblock %}
 
