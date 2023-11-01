@@ -19,7 +19,7 @@ class User(AbstractUser):
     )
 
     position = models.CharField('Должность', max_length=20, choices=positions, default='Студент')
-    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='Вводный', blank=True)
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='NN', blank=True)
     disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
 
 
