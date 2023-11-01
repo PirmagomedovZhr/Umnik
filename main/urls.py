@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (LogoutUserView, LadderView, SignInView, SignUpView, DisciplinView, FinalQuizView)
+from .views import (LogoutUserView, LadderView, SignInView, SignUpView, DisciplinView)
 from . import views
 
 urlpatterns = [
@@ -24,7 +24,7 @@ path('disciplin/<int:disciplin_id>/ladder/', views.LadderView.as_view(), name='l
     path('chat/', views.chat, name='chat'),
     path('ajax/', views.Ajax, name='ajax'),
     path('discipline_results/<int:disciplin_id>/', views.discipline_results_view, name='discipline_results'),
-path('final_quiz/<int:disciplin_id>/', FinalQuizView.as_view(), name='final_quiz'),
+    path('final_quiz/<int:disciplin_id>/', views.final_quiz_view, name='final_quiz'),
 
     # ... другие пути ...
 ]

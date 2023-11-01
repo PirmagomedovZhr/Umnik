@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm, QuizFinalForm
+from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404
@@ -12,8 +12,26 @@ from .models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import openai
+from functools import wraps
+
+def teacher_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.position == 'Преподаватель':
+            return view_func(request, *args, **kwargs)
+        else:
+            return redirect('base')  # Замените 'base' на URL вашей базовой страницы
+    return _wrapped_view
 
 
+def student_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.position == 'Студент':
+            return view_func(request, *args, **kwargs)
+        else:
+            return redirect('base')  # Замените 'base' на URL вашей базовой страницы
+    return _wrapped_view
 
 class SignUpView(View):
     def get(self, request, *args, **kwargs):
@@ -70,7 +88,17 @@ class LadderView(View):
     template_name = 'main/users/ladder.html'
 
     def get(self, request, disciplin_id):
-        return render(request, self.template_name, {'disciplin_id': disciplin_id})
+        if request.user.is_authenticated and request.user.position == 'Студент':
+            return render(request, self.template_name, {'disciplin_id': disciplin_id})
+        else:
+            return HttpResponseRedirect('/signin')
+
+    def post(self, request, disciplin_id):
+        if request.user.is_authenticated and request.user.position == 'Студент':
+            return redirect('base')  # Пример перенаправления на базовую страницу
+        else:
+            return HttpResponseRedirect('/signin')
+
 
 
 
@@ -78,7 +106,7 @@ class DisciplinView(View):
     template_name = 'main/users/disciplin.html'
 
     def get(self, request):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.user.position == 'Студент':
             form = TokenForm()
             user_disciplines = request.user.disciplines.all()
             return render(request, self.template_name, {'form': form, 'user_disciplines': user_disciplines})
@@ -86,17 +114,25 @@ class DisciplinView(View):
             return HttpResponseRedirect('/signin')
 
     def post(self, request):
-        form = TokenForm(request.POST)
-        if form.is_valid():
-            token = form.cleaned_data['token']
-            try:
-                discipline = Disciplin.objects.get(token=token)
-                request.user.disciplines.add(discipline)
-            except Disciplin.DoesNotExist:
-                pass  # обработка случая, когда дисциплины с таким токеном не существует
-            return redirect('disciplin')
+        if request.user.is_authenticated and request.user.position == 'Студент':
+            form = TokenForm(request.POST)
+            if form.is_valid():
+                token = form.cleaned_data['token']
+                try:
+                    discipline = Disciplin.objects.get(token=token)
+                    request.user.disciplines.add(discipline)
+                except Disciplin.DoesNotExist:
+                    pass  # обработка случая, когда дисциплины с таким токеном не существует
+                return redirect('disciplin')
+            else:
+                # Обработка невалидной формы
+                pass
+        else:
+            return HttpResponseRedirect('/signin')
 
 
+
+@student_required
 def topic_detail(request, topic_id):  # Переименовано для ясности
     topic = Topic.objects.get(id=topic_id)  # Изменено здесь
     return render(request, 'main/users/topic_detail.html', {'topic': topic})  # Изменено здесь
@@ -107,7 +143,7 @@ class LogoutUserView(View):
         logout(request)
         return redirect('signin')
 
-
+@student_required
 def quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
 
@@ -179,7 +215,7 @@ def quiz_view(request, disciplin_id):
 
 
 from .models import QuizResult
-
+@student_required
 def discipline_results_view(request, disciplin_id):
     disciplin = Disciplin.objects.get(id=disciplin_id)
     results = QuizResult.objects.filter(user=request.user, disciplin=disciplin)
@@ -187,12 +223,16 @@ def discipline_results_view(request, disciplin_id):
     return render(request, 'main/users/discipline_results.html', {'disciplin': disciplin, 'results': results})
 
 
-
 def result_view(request):
-    return render(request, 'main/users/base.html')
+    if request.user.position == 'Преподаватель':
+        template = 'main/admin/base.html'
+    else:
+        template = 'main/users/base.html'
+
+    return render(request, template)
 
 
-
+@teacher_required
 def create_group(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -219,7 +259,7 @@ def create_group(request):
 
 
 
-
+@teacher_required
 def create_discipline(request):
     if request.method == 'POST':
         form = DisciplineForm(request.POST, user=request.user)  # Добавьте user сюда
@@ -234,7 +274,7 @@ def create_discipline(request):
 
 
 
-
+@teacher_required
 def create_question(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST, request.FILES)
@@ -246,7 +286,7 @@ def create_question(request):
     return render(request, 'main/admin/create_question.html', {'form': form})
 
 
-
+@teacher_required
 def create_answer(request, pk):
     question = Question.objects.get(pk=pk)
     if request.method == 'POST':
@@ -260,18 +300,18 @@ def create_answer(request, pk):
         form = AnswerForm()
     return render(request, 'main/admin/create_answer.html', {'form': form, 'question': question})
 
-
+@teacher_required
 def homesss(request):
     return render(request, 'main/admin/homesss.html')
 
-
+@student_required
 def disciplin_detail_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
     topics = disciplin.topics.all()
     return render(request, 'main/users/disciplin_detail.html', {'disciplin': disciplin, 'topics': topics})
 
 
-
+@teacher_required
 def create_topic(request):
     if request.method == 'POST':
         form = TopicForm(request.POST)
@@ -282,7 +322,7 @@ def create_topic(request):
         form = TopicForm()
     return render(request, 'main/admin/create_topic.html', {'form': form})
 
-
+@student_required
 def test_view(request):
     return render(request, 'main/users/test.html')
 
@@ -316,51 +356,59 @@ def Ajax(request):
 
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import FinalQuizForm
+from .models import Disciplin, Question, FinalQuizsResult
 import random
-import itertools
-
-class FinalQuizView(View):
-    template_name = 'main/users/final_quiz.html'
-
-    def get(self, request, disciplin_id):
-        disciplin = get_object_or_404(Disciplin, id=disciplin_id)
-        blocks = User.difficulty_blocks
-
-        selected_questions = []
-        for block in blocks:
-            # Выбираем 20 случайных вопросов из текущего блока
-            block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
-            print(f"Block: {block}, Questions: {block_questions}")
-            selected_block_questions = random.sample(list(block_questions), min(20, block_questions.count()))
-            selected_questions.extend(selected_block_questions)
-
-        # Перемешиваем вопросы, чтобы они были в случайном порядке
-        random.shuffle(selected_questions)
-
-        return render(request, self.template_name, {'disciplin': disciplin, 'questions': selected_questions})
 
 
+def final_quiz_view(request, disciplin_id):
+    disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+    user_has_taken_quiz = FinalQuizsResult.objects.filter(user=request.user, disciplin=disciplin).exists()
 
-class FinalQuizView(View):
-    template_name = 'main/users/final_quiz.html'
+    if user_has_taken_quiz:
+        # Если пользователь уже прошел тест, перенаправляем его на страницу с результатами
+        return redirect('disciplin')
 
-    def get(self, request, disciplin_id):
-        disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+    # Выбираем случайные вопросы из каждого блока
+    questions = []
+    for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
+        block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
+        questions += random.sample(list(block_questions), min(20, block_questions.count()))
 
-        # Получаем все вопросы по указанной дисциплине
-        all_questions = Question.objects.filter(disciplin=disciplin)
+    if request.method == 'POST':
+        form = FinalQuizForm(request.POST, questions=questions)
+        if form.is_valid():
+            correct_answers_count = 0
+            for question, answer_instance in zip(questions, form.cleaned_data.values()):
+                if answer_instance and answer_instance.is_correct:
+                    correct_answers_count += 1
 
-        # Выбираем по 20 вопросов из каждого блока
-        selected_questions = []
-        for block_code, block_name in User.difficulty_blocks:
-            block_questions = all_questions.filter(difficulty_block=block_code)
-            selected_block_questions = random.sample(list(block_questions), min(20, block_questions.count()))
-            selected_questions.extend(selected_block_questions)
+            percentage = (correct_answers_count / len(questions)) * 100
 
-        # Перемешиваем вопросы
-        random.shuffle(selected_questions)
+            if percentage >= 90:
+                grade = 5
+            elif percentage >= 80:
+                grade = 4
+            elif percentage >= 70:
+                grade = 3
+            else:
+                grade = 2
 
-        # Создаем форму и передаем в нее все вопросы и ответы
-        form = QuizForm(questions=selected_questions)
+            final_quiz_result = FinalQuizsResult(
+                user=request.user,
+                disciplin=disciplin,
+                correct_answers_count=correct_answers_count,
+                percentage=percentage,
+                grade=grade
+            )
+            final_quiz_result.save()
 
-        return render(request, self.template_name, {'disciplin': disciplin, 'form': form})
+            return redirect('disciplin')
+
+    else:
+        form = FinalQuizForm(questions=questions)
+
+    questions_and_forms = zip(questions, form)
+    return render(request, 'main/users/final_quiz.html',
+                  {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})

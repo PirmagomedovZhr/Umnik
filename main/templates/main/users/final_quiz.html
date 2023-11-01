@@ -1,34 +1,26 @@
 {% extends 'main/users/home.html' %}
 {% load static %}
-
 {% block title %}
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
 {% endblock %}
-
 {% block content %}
-    <main class="main js-main-final-quiz">
-        <form method="post" action="{% url 'final_quiz' disciplin.id %}">
+
+    <main class="main js-main-quiz">
+        <form method="post" action="{% url 'final_quiz' disciplin_id %}">
             {% csrf_token %}
-            {% for question in form %}
-                <p>{{ question.label }}</p>
-                {% if question.field.widget.input_type == 'radio' %}
-                    <ul>
-                        {% for choice in question.field.queryset %}
-                            <li>
-                                <input type="radio" name="{{ question.name }}" value="{{ choice.id }}">
-                                {{ choice }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <input type="{{ question.field.widget.input_type }}" name="{{ question.name }}" value="{{ question.value }}">
+            {% for question, field in questions_and_forms %}
+                <div class="question">
+                    <p>{{ question.text }}</p>
                     {% if question.image %}
-                        <img src="{{ question.image.url }}" alt="{{ question.label }}">
+                        <img src="{{ question.image.url }}" alt="{{ question.text }}">
                     {% endif %}
-                {% endif %}
+                    {{ field }}
+                </div>
             {% endfor %}
+
+            <br><br>
             <div class="buts">
-                <input type="submit" value="Завершить финальный тест">
+                <input type="submit" value="Завершить тест">
             </div>
         </form>
     </main>

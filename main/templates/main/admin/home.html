@@ -30,15 +30,17 @@
     <div class="sub-navbar">
         <nav>
             <ul>
-                <li><a href="#">Главная</a></li>
-                <li><a href="#">Обучение</a></li>
+               <li><a href="{% url 'base' %}">Главная</a></li>
                 <li><a href="{% url 'homesss' %}">Управление</a></li>
+                <li><a href="https://dstu.ru" target="_blank">Сайт ДГТУ</a></li>
                 <li><a href="{% url 'chat' %}">Помощь</a></li>
+                <li><a href="{% url 'logout' %}">Выйти</a></li>
             </ul>
         </nav>
     </div>
 
         {% block content %}
+
         {% endblock %}
 </body>
 

@@ -128,33 +128,18 @@ class QuizForm(forms.Form):
 
 
 
-class QuizFinalForm(forms.Form):
+class FinalQuizForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.questions = kwargs.pop('questions')
-        super(QuizFinalForm, self).__init__(*args, **kwargs)
+        super(FinalQuizForm, self).__init__(*args, **kwargs)
         for index, question in enumerate(self.questions, start=1):
-            if question.question_type == 'MC':
-                self.fields[f'question_{index}'] = forms.ModelChoiceField(
-                    queryset=question.answers.all(),
-                    widget=forms.RadioSelect,
-                    empty_label=None,
-                    label=question.text,
-                )
-                self.fields[f'answer_{index}'] = forms.ModelChoiceField(
-                    queryset=question.answers.all(),
-                    empty_label=None,
-                    widget=forms.HiddenInput(),
-                )
-            elif question.question_type == 'TF':
-                self.fields[f'question_{index}'] = forms.CharField(
-                    label=question.text,
-                    widget=forms.TextInput(attrs={'placeholder': 'Введите ответ', 'class': 'text-input'})
-                )
-                self.fields[f'answer_{index}'] = forms.CharField(
-                    initial=question.correct_answer,
-                    widget=forms.HiddenInput(),
-                )
-
+            self.fields[f'question_{index}'] = forms.ModelChoiceField(
+                queryset=Answer.objects.filter(question=question),
+                widget=forms.RadioSelect,
+                empty_label=None,
+                label=question.text,
+                required=False  # Можно установить в True, если каждый вопрос должен быть обязательно отвечен
+            )
 class GroupForm(forms.ModelForm):
     name = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Введите название группы'}),

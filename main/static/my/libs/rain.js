@@ -20,8 +20,9 @@ function RainDrops(x, y, endy, velocity, opacity) {
 		c.beginPath();
 		c.moveTo(this.x, this.y);
 		c.lineTo(this.x, this.y - this.endy);
-		c.lineWidth = 1;
-		c.strokeStyle= "rgba(255, 255, 255, " + this.opacity + ")";
+        c.lineWidth = 7; // Увеличьте толщину линии
+        c.strokeStyle = "rgba(255, 255, 255, " + this.opacity + ")"; // Увеличьте прозрачность и цвет
+
 		c.stroke();
 	}
 

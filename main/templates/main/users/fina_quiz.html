@@ -1,0 +1,24 @@
+{% extends 'main/users/home.html' %}
+{% load static %}
+{% block title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
+{% endblock %}
+{% block content %}
+    <main class="main js-main-quiz">
+        <form method="post" action="{% url 'final_quiz_submit' final_quiz.id %}">
+            {% csrf_token %}
+            {% for question in final_quiz.questions.all %}
+                <p>{{ question.text }}</p>
+                {% if question.image %}
+                    <img src="{{ question.image.url }}" alt="{{ question.text }}">
+                {% endif %}
+                {# Здесь добавьте форму для ответа на вопросы финального теста #}
+            {% endfor %}
+
+            <br><br>
+            <div class="buts">
+                <input type="submit" value="Завершить финальный тест">
+            </div>
+        </form>
+    </main>
+{% endblock %}

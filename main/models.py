@@ -87,3 +87,13 @@ class QuizResult(models.Model):
     correct_answers_count = models.PositiveIntegerField()
     percentage = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
+
+
+
+class FinalQuizsResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE)  # добавьте эту строку
+    correct_answers_count = models.PositiveIntegerField()
+    percentage = models.FloatField()
+    grade = models.PositiveIntegerField()
+    date = models.DateTimeField(auto_now_add=True)
