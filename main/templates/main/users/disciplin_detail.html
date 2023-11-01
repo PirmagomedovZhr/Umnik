@@ -1,3 +1,7 @@
+
+
+
+
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
@@ -5,16 +9,25 @@
 {% block content %}
 <main class="main-disciplins">
         <div class="containers">
-        <div class="sectionss">  <!-- Изменено здесь -->
-            {% for topic in topics %}  <!-- Изменено здесь -->
-            <div class="sections">  <!-- Изменено здесь -->
-                <a href="{% url 'topic_detail' topic.id %}">{{ topic.title }}</a>  <!-- Изменено здесь -->
+        <div class="sectionss">
+            {% for topic in topics %}
+            <div class="sections">
+                <div class="section-title">
+                    <a href="{% url 'topic_detail' topic.id %}">{{ topic.title }}</a>
+                </div>
+                {% if topic.video_url %}
+                <div class="section-video">
+                    <a href="{{ topic.video_url }}" target="_blank">Перейти к видео</a>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
     </div>
-    </main>
-<style>.main-disciplins {
+</main>
+
+<style>
+.main-disciplins {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,17 +47,18 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
     justify-content: center;
+    align-items: start; /* Добавлено это свойство */
 }
 
 .sections {
-    background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
-    border-radius: 10px;
+    background-color: rgb(0, 125, 253);
+    border-radius: 10px; /* скругленные углы */
     overflow: hidden;
     text-align: center;
     transition: transform 0.2s ease-in-out;
 }
 
-.sections a {
+.section-title a {
     display: block;
     padding: 50px 20px;
     color: #fff;
@@ -53,12 +67,20 @@
     transition: color 0.2s ease-in-out;
 }
 
-.sections:hover {
-    transform: scale(1.05);
+.section-video a {
+    display: block;
+    padding: 20px; /* уменьшено, чтобы кнопка была меньше */
+    color: #fff;
+    background-color: #e44d26;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: color 0.2s ease-in-out;
 }
 
-.sections a:hover {
-    color: #e44d26;
+.section-video a:hover {
+    color: #fbc2eb;
 }
+
 </style>
+
 {% endblock %}

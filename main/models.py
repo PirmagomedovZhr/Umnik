@@ -36,6 +36,7 @@ class Disciplin(models.Model):
     groups = models.ForeignKey(Groups, on_delete=models.CASCADE)
     token = models.CharField(max_length=10)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='discipline_images/', null=True, blank=True)  # новое поле для изображения
 
     def get_absolute_url(self):
         return reverse('disciplin_detail', args=[str(self.id)])
@@ -43,11 +44,12 @@ class Disciplin(models.Model):
     def __str__(self):
         return self.name
 
+
 class Topic(models.Model):
     title = models.CharField('Название', max_length=100)
     content = models.TextField('Текст', blank=True)
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='topics')
-
+    video_url = models.URLField('Ссылка на видео', blank=True)
     def __str__(self):
         return self.title
 

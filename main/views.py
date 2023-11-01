@@ -214,6 +214,7 @@ def quiz_view(request, disciplin_id):
 
 
 
+
 from .models import QuizResult
 @student_required
 def discipline_results_view(request, disciplin_id):
@@ -223,13 +224,29 @@ def discipline_results_view(request, disciplin_id):
     return render(request, 'main/users/discipline_results.html', {'disciplin': disciplin, 'results': results})
 
 
-def result_view(request):
-    if request.user.position == 'Преподаватель':
-        template = 'main/admin/base.html'
-    else:
-        template = 'main/users/base.html'
+def final_quiz_results_view(request, disciplin_id):
+    disciplin = Disciplin.objects.get(id=disciplin_id)
+    results = FinalQuizsResult.objects.filter(user=request.user, disciplin=disciplin)
 
-    return render(request, template)
+    # Получите наивысшую оценку, если результаты есть
+    max_grade = None
+    if results.exists():
+        max_grade = max(result.grade for result in results)
+
+    return render(request, 'main/users/final_quiz_results.html',
+                  {'disciplin': disciplin, 'results': results, 'max_grade': max_grade})
+
+
+def result_view(request):
+    if request.user.is_authenticated:
+        if request.user.position == 'Преподаватель':
+            template = 'main/admin/base.html'
+        else:
+            template = 'main/users/base.html'
+        return render(request, template)
+    else:
+        return HttpResponseRedirect('/signin')
+
 
 
 @teacher_required
@@ -364,10 +381,10 @@ import random
 
 def final_quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
-    user_has_taken_quiz = FinalQuizsResult.objects.filter(user=request.user, disciplin=disciplin).exists()
+    user_quiz_attempts = FinalQuizsResult.objects.filter(user=request.user, disciplin=disciplin).count()
 
-    if user_has_taken_quiz:
-        # Если пользователь уже прошел тест, перенаправляем его на страницу с результатами
+    if user_quiz_attempts >= 2:
+        # Если пользователь уже прошел тест 2 раза, перенаправляем его на страницу с результатами
         return redirect('disciplin')
 
     # Выбираем случайные вопросы из каждого блока

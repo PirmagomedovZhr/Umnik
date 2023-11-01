@@ -86,19 +86,23 @@
 
 
 
-    <div class="content">
-        {% for discipline in user_disciplines %}
-        <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
-            <h2>{{ discipline.name }}</h2>
-            <p></p>
-            <img src="{% static 'a.jpg' %}" alt="Image">
-            <div class="button-wrapper">
-<button onclick="location.href='{% url 'ladder' discipline.id %}'">ПЕРЕЙТИ</button>
-
-            </div>
+<div class="content">
+    {% for discipline in user_disciplines %}
+    <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
+        <h2>{{ discipline.name }}</h2>
+        <p></p>
+        {% if discipline.image %}
+        <img src="{{ discipline.image.url }}" alt="Image of {{ discipline.name }}">
+        {% else %}
+        <img src="{% static 'a.jpg' %}" alt="Default Image">
+        {% endif %}
+        <div class="button-wrapper">
+            <button onclick="location.href='{% url 'ladder' discipline.id %}'">ПЕРЕЙТИ</button>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
+
 </main>
 </body>
 

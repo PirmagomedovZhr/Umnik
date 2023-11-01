@@ -5,25 +5,49 @@
 {% endblock %}
 {% block content %}
 
-    <main class="main js-main-quiz">
-  <form method="post" action="{% url 'quiz' disciplin_id %}">
-    {% csrf_token %}
-{% for question, field in questions_and_forms %}
-    <p>{{ question.text }}</p>
-    {% if question.image %}
-        <img src="{{ question.image.url }}" alt="{{ question.text }}">
-    {% endif %}
-    {{ field }}
-    {% if question.question_type == 'TF' %}
-    {% endif %}
-{% endfor %}
+<main class="main js-main-quiz">
+    <form method="post" action="{% url 'quiz' disciplin_id %}">
+        {% csrf_token %}
+        {% for question, field in questions_and_forms %}
+        <p>{{ question.text }}</p>
+        {% if question.image %}
+            <img src="{{ question.image.url }}" alt="{{ question.text }}">
+        {% endif %}
+        {{ field }}
+        {% if question.question_type == 'TF' %}
+        {% endif %}
+        {% endfor %}
 
-<br><br>
-<div class="buts">
-    <input type="submit" value="Завершить тест">
-</div>
-<a href="{% url 'final_quiz' disciplin_id %}" class="final-quiz-button">Перейти к финальному тесту</a>
+        <br><br>
+        <div class="buts">
+            <input type="submit" value="Завершить тест">
+        </div>
+        <a href="{% url 'final_quiz' disciplin_id %}" class="final-quiz-button">Перейти к финальному тесту</a>
+    </form>
+</main>
 
-  </form>
-    </main>
+<style>
+    .final-quiz-button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 20px 0;
+        font-size: 16px;
+        color: #fff;
+        background-color: #e74c3c;
+        border: none;
+        border-radius: 4px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .final-quiz-button:hover {
+        background-color: #d62c1a;
+    }
+
+    .final-quiz-button:active {
+        background-color: #99281a;
+    }
+</style>
+
 {% endblock %}
