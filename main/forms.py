@@ -169,9 +169,11 @@ class DisciplineForm(forms.ModelForm):
         self.fields['token'].widget.attrs.update({'placeholder': 'Введите токен'})  # placeholder для поля token
         self.fields['token'].label = ""  # убираем метку
 
+        self.fields['image'].widget.attrs.update({'placeholder': 'Выберите фотографию'})  # placeholder для поля token
+        self.fields['image'].label = "Выберите фотографию для дисциплины"  # убираем метку
     class Meta:
         model = Disciplin
-        fields = ['name', 'token', 'groups' ]
+        fields = ['name', 'token', 'groups', 'image']
 
 
 
