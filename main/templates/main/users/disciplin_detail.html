@@ -2,18 +2,27 @@
 
 
 
+
+
+
+
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
 {% endblock %}
 {% block content %}
 <main class="main-disciplins">
-        <div class="containers">
+    <div class="containers">
         <div class="sectionss">
             {% for topic in topics %}
             <div class="sections">
                 <div class="section-title">
-                    <a href="{% url 'topic_detail' topic.id %}">{{ topic.title }}</a>
+                    <!-- Название лекции будет служить ссылкой на скачивание файла -->
+                    {% if topic.file %}
+                    <a href="{{ topic.file.url }}" download="{{ topic.title|slugify }}">{{ topic.title }}</a>
+                    {% else %}
+                    <span>Файл лекции отсутствует</span>
+                    {% endif %}
                 </div>
                 {% if topic.video_url %}
                 <div class="section-video">
@@ -25,7 +34,6 @@
         </div>
     </div>
 </main>
-
 <style>
 .main-disciplins {
     display: flex;
@@ -82,5 +90,4 @@
 }
 
 </style>
-
 {% endblock %}

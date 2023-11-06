@@ -5,14 +5,17 @@ from .models import User, Groups, Disciplin, Topic
 class TopicForm(forms.ModelForm):
     class Meta:
         model = Topic
-        fields = ['title', 'content', 'disciplin']
+        fields = ['title', 'file', 'disciplin', 'video_url']  # Используйте 'file' вместо 'content'
 
     def __init__(self, *args, **kwargs):
         super(TopicForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['placeholder'] = field.label  # используем метку поля как placeholder
-            field.label = ""  # убираем метку поля
+            if field_name == 'file':
+                field.widget.attrs['accept'] = '.pdf,.doc,.docx'  # Принимаем только PDF и Word документы
+            field.widget.attrs['placeholder'] = field.label
+            field.label = ""
+
 
 
 class SignUpForm(forms.Form):

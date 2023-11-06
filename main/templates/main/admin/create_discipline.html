@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
 <main class="main-gr">
-<form method="post" action="">
+<form method="post" action="" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
     <div class="for_button"><button type="submit" class="create-group-btn">Создать</button></div>
-
 </form>
+    
 </main>
 {% endblock %}
 

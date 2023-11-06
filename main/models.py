@@ -45,13 +45,23 @@ class Disciplin(models.Model):
         return self.name
 
 
+from django.core.validators import FileExtensionValidator
 class Topic(models.Model):
     title = models.CharField('Название', max_length=100)
-    content = models.TextField('Текст', blank=True)
+    file = models.FileField(
+        'Файл лекции',
+        upload_to='lectures/',  # Указывает папку, куда будут загружаться файлы
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx'])],  # Проверка расширения файла
+        blank=True,
+        null=True
+    )
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='topics')
     video_url = models.URLField('Ссылка на видео', blank=True)
+
     def __str__(self):
         return self.title
+
+
 
 
 class Question(models.Model):

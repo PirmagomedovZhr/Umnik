@@ -11,3 +11,4 @@ admin.site.register(Disciplin)
 admin.site.register(FinalQuizsResult)
 
 
+

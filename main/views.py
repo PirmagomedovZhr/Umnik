@@ -279,7 +279,7 @@ def create_group(request):
 @teacher_required
 def create_discipline(request):
     if request.method == 'POST':
-        form = DisciplineForm(request.POST, user=request.user)  # Добавьте user сюда
+        form = DisciplineForm(request.POST, request.FILES, user=request.user)  # Изменение здесь
         if form.is_valid():
             discipline = form.save(commit=False)
             discipline.user = request.user
@@ -331,9 +331,9 @@ def disciplin_detail_view(request, disciplin_id):
 @teacher_required
 def create_topic(request):
     if request.method == 'POST':
-        form = TopicForm(request.POST)
+        form = TopicForm(request.POST, request.FILES)  # Добавьте request.FILES
         if form.is_valid():
-            topic = form.save()
+            form.save()
             return redirect('homesss')
     else:
         form = TopicForm()
