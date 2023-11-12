@@ -385,56 +385,70 @@ from .models import Disciplin, Question, FinalQuizsResult
 import random
 
 
+import random
+
+import random
+
 def final_quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
-    user_quiz_attempts = FinalQuizsResult.objects.filter(user=request.user, disciplin=disciplin).count()
+    user = request.user
 
+    # Проверяем количество попыток пользователя
+    user_quiz_attempts = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).count()
     if user_quiz_attempts >= 2:
-        # Если пользователь уже прошел тест 2 раза, перенаправляем его на страницу с результатами
-        return redirect('disciplin')
+        return redirect('ladder', disciplin_id=disciplin_id)
 
-    # Выбираем случайные вопросы из каждого блока
+    # Выбираем вопросы из разных блоков
     questions = []
     for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
         block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
-        questions += random.sample(list(block_questions), min(20, block_questions.count()))
+        questions.extend(random.sample(list(block_questions), min(20, block_questions.count())))
 
     if request.method == 'POST':
         form = FinalQuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
-            for question, answer_instance in zip(questions, form.cleaned_data.values()):
-                if answer_instance and answer_instance.is_correct:
-                    correct_answers_count += 1
+            incorrect_answers = []
 
+            for question in questions:
+                field_name = f'question_{question.id}'
+                user_answer = form.cleaned_data.get(field_name)
+
+                if question.question_type == 'MC':
+                    correct_answer = question.answers.filter(is_correct=True).first()
+                    if correct_answer and str(correct_answer.id) == user_answer:
+                        correct_answers_count += 1
+                    else:
+                        # Сохраняем ID вопроса и ответ пользователя
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer})
+                elif question.question_type == 'TF':
+                    correct_answer = question.answers.filter(is_correct=True).first()
+                    if correct_answer and correct_answer.text.strip().lower() == user_answer.strip().lower():
+                        correct_answers_count += 1
+                    else:
+                        # Сохраняем ID вопроса и ответ пользователя
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer})
+
+            # Рассчитываем процент правильных ответов и оценку
             percentage = (correct_answers_count / len(questions)) * 100
+            grade = 5 if percentage >= 90 else 4 if percentage >= 80 else 3 if percentage >= 70 else 2
 
-            if percentage >= 90:
-                grade = 5
-            elif percentage >= 80:
-                grade = 4
-            elif percentage >= 70:
-                grade = 3
-            else:
-                grade = 2
-
-            final_quiz_result = FinalQuizsResult(
-                user=request.user,
+            # Сохраняем результат
+            FinalQuizsResult.objects.create(
+                user=user,
                 disciplin=disciplin,
                 correct_answers_count=correct_answers_count,
                 percentage=percentage,
-                grade=grade
+                grade=grade,
+                incorrect_answers=incorrect_answers
             )
-            final_quiz_result.save()
 
-            return redirect('disciplin')
-
+            return redirect('disciplin')  # Перенаправляем на страницу с результатами
     else:
         form = FinalQuizForm(questions=questions)
 
-    questions_and_forms = zip(questions, form)
-    return render(request, 'main/users/final_quiz.html',
-                  {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
+    return render(request, 'main/users/final_quiz.html', {'form': form, 'disciplin_id': disciplin_id})
+
 
 
 
@@ -454,3 +468,22 @@ def incorrect_answers_view(request, quiz_result_id):
     ]
 
     return render(request, 'main/users/incorrect_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})
+
+
+
+def incorrect_final_quiz_view(request, final_quiz_result_id):
+    final_quiz_result = get_object_or_404(FinalQuizsResult, id=final_quiz_result_id)
+    incorrect_answers_data = final_quiz_result.incorrect_answers
+
+    incorrect_questions_with_answers = [
+        {
+            'question': Question.objects.get(id=answer_data['question_id']),
+            'user_answer': answer_data['user_answer'],
+            'correct_answer': ', '.join([
+                ans.text for ans in Question.objects.get(id=answer_data['question_id']).answers.filter(is_correct=True)
+            ])
+        }
+        for answer_data in incorrect_answers_data
+    ]
+
+    return render(request, 'main/users/incorrect_final_quiz_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})

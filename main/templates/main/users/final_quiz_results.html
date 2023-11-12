@@ -12,12 +12,13 @@
         {% if max_grade %}
         <h2>Итоговая оценка: {{ max_grade }}</h2>
         {% endif %}
-        {% for result in results %}
-        <div class="result-chart">
-            <h3>Результаты для {{ result.date }}</h3>
-            <canvas id="testResultsChart_{{ forloop.counter }}" width="600" height="400"></canvas>
-        </div>
-        {% endfor %}
+{% for result in results %}
+<div class="result-chart">
+    <h3>Результаты для {{ result.date }}</h3>
+    <canvas id="testResultsChart_{{ forloop.counter }}" width="600" height="400"></canvas>
+    <a href="{% url 'incorrect_final_quiz' result.id %}">Просмотреть неправильные ответы</a>
+</div>
+{% endfor %}
     </div>
 </div>
 <script>

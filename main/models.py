@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+from django.utils import timezone
+
 
 class User(AbstractUser):
     positions = (
@@ -105,7 +107,8 @@ class QuizResult(models.Model):
 class FinalQuizsResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE)  # добавьте эту строку
-    correct_answers_count = models.PositiveIntegerField()
-    percentage = models.FloatField()
-    grade = models.PositiveIntegerField()
+    correct_answers_count = models.PositiveIntegerField(null=True)
+    percentage = models.FloatField(null=True)
+    grade = models.PositiveIntegerField(null=True)
     date = models.DateTimeField(auto_now_add=True)
+    incorrect_answers = models.JSONField(default=list)

@@ -4,24 +4,89 @@
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
 {% endblock %}
 {% block content %}
+    <div class="abcd"><h1>Итоговое тестирование</h1>
+{% if remaining_time %}
+    <p>Оставшееся время на тест: {{ remaining_time }}</p></div>
+{% endif %}
+<main class="main js-main-quiz">
 
-    <main class="main js-main-quiz">
-        <form method="post" action="{% url 'final_quiz' disciplin_id %}">
-            {% csrf_token %}
-            {% for question, field in questions_and_forms %}
-                <div class="question">
-                    <p>{{ question.text }}</p>
-                    {% if question.image %}
-                        <img src="{{ question.image.url }}" alt="{{ question.text }}">
-                    {% endif %}
-                    {{ field }}
-                </div>
-            {% endfor %}
-
-            <br><br>
-            <div class="buts">
-                <input type="submit" value="Завершить тест">
+    <form method="post" class="quiz-form">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="question">
+                {{ field.label_tag }}
+                {% if field.field.widget.attrs.image_url %}
+                    <img src="{{ field.field.widget.attrs.image_url }}" alt="Image for {{ field.label }}" class="question-image">
+                {% endif %}
+                {{ field }}
             </div>
-        </form>
-    </main>
+        {% endfor %}
+        <div class="abcd">
+        <button type="submit" class="submit-button">Завершить тест</button></div>
+    </form>
+</main>
+<style>
+    .abcd {
+    text-align: center;
+    }
+
+    .quiz-form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .question {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+    }
+
+    .question:last-child {
+        border-bottom: none;
+    }
+
+    .question p {
+        margin: 0;
+        font-weight: bold;
+    }
+
+    /* Стили для радио кнопок и текстовых полей */
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box; /* Для поддержания одинаковых размеров */
+    }
+
+    /* Стили для изображений вопросов */
+    .question-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    /* Стили для кнопки отправки */
+    .submit-button {
+        background-color: #5cb85c;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .submit-button:hover {
+        background-color: #4cae4c;
+    }
+</style>
+
 {% endblock %}

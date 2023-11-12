@@ -131,18 +131,29 @@ class QuizForm(forms.Form):
 
 
 
+
 class FinalQuizForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.questions = kwargs.pop('questions')
+        questions = kwargs.pop('questions', [])
         super(FinalQuizForm, self).__init__(*args, **kwargs)
-        for index, question in enumerate(self.questions, start=1):
-            self.fields[f'question_{index}'] = forms.ModelChoiceField(
-                queryset=Answer.objects.filter(question=question),
-                widget=forms.RadioSelect,
-                empty_label=None,
-                label=question.text,
-                required=False  # Можно установить в True, если каждый вопрос должен быть обязательно отвечен
-            )
+
+        for question in questions:
+            field_name = f'question_{question.id}'
+            if question.question_type == 'MC':
+                choices = [(answer.id, answer.text) for answer in question.answers.all()]
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=choices, widget=forms.RadioSelect, label=question.text)
+            elif question.question_type == 'TF':
+                self.fields[field_name] = forms.CharField(
+                    widget=forms.TextInput, label=question.text)
+
+            # Добавление URL изображения как атрибута поля
+            if question.image:
+                self.fields[field_name].widget.attrs['image_url'] = question.image.url
+
+
+
+
 class GroupForm(forms.ModelForm):
     name = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Введите название группы'}),

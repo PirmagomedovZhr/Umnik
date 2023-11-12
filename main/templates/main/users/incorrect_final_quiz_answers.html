@@ -4,14 +4,12 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-    <div class="abcd">
-    <h1>Некорректные ответы</h1>
-    </div>
+    <h1>Неправильные Ответы в Итоговом Тесте</h1>
     {% for item in incorrect_questions_with_answers %}
         <div class="question">
             <h2>{{ item.question.text }}</h2>
             {% if item.question.image %}
-                <img src="{{ item.question.image.url }}" alt="Вопрос">
+                <img src="{{ item.question.image.url }}" alt="{{ item.question.text }}">
             {% endif %}
             <p><strong>Ваш ответ:</strong> {{ item.user_answer }}</p>
             <p><strong>Правильный ответ:</strong> {{ item.correct_answer }}</p>
