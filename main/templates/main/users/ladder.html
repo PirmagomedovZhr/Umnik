@@ -5,6 +5,7 @@
 {% endblock %}
 {% block content %}
 <div class="content">
+{% if request.user.difficulty_block == 'NN' %}
     <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
         <h2>ОБУЧЕНИЕ</h2>
         <p></p>
@@ -16,13 +17,14 @@
     </div>
 
     <div class="card" style="background-image: linear-gradient(to top, rgb(62, 141, 184), rgb(148, 180, 205));">
-        <h2>ТЕСТИРОВАНИЕ</h2>
+        <h2>ВВОДНЫЙ ТЕСТ</h2>
         <p></p>
         <img src="{% static 'notepad.png' %}" alt="Image">
         <div class="button-wrapper">
         <button onclick="location.href='{% url 'quiz' disciplin_id %}'">ПЕРЕЙТИ</button>
     </div>
 </div>
+
 
     <div class="card" style="background-image: linear-gradient(to top, rgb(52, 140, 204), rgb(103, 198, 230));">
         <h2>РЕЗУЛЬТАТЫ</h2>
@@ -32,10 +34,47 @@
         <button onclick="location.href='{% url 'discipline_results' disciplin_id %}'">ПЕРЕЙТИ</button>
 </div>
     </div>
+{% else %}
+    <div class="card" style="background-image: linear-gradient(180deg, #2af598 0%, #009efd 40%);">
+        <h2>ОБУЧЕНИЕ</h2>
+        <p></p>
+        <img src="{% static 'topic.png' %}" alt="Image">
+        <div class="button-wrapper">
+<button onclick="location.href='{% url 'disciplin_detail' disciplin_id %}'">ПЕРЕЙТИ</button>
+</div>
+        </div>
+
+    <div class="card" style="background-image: linear-gradient(to top, rgb(62, 141, 184), rgb(148, 180, 205));">
+        <h2>ТЕСТИРОВАНИЕ</h2>
+        <p></p>
+        <img src="{% static 'notepad.png' %}" alt="Image">
+        <div class="button-wrapper">
+        <button onclick="location.href='{% url 'quiz' disciplin_id %}'">ПЕРЕЙТИ</button>
+    </div>
+</div>
+
+        <div class="card" style="background-image: linear-gradient(to top, rgb(52, 140, 204), rgb(103, 198, 230));">
+        <h2>ИТОГОВЫЙ ТЕСТ</h2>
+        <p></p>
+        <img src="{% static 'result.png' %}" alt="Image">
+      <div class="button-wrapper">
+        <button onclick="location.href='{% url 'final_quiz' disciplin_id %}'">ПЕРЕЙТИ</button>
+</div>
+    </div>
+
+    <div class="card" style="background-image: linear-gradient(to top, rgb(52, 140, 204), rgb(103, 198, 230));">
+        <h2>РЕЗУЛЬТАТЫ</h2>
+        <p></p>
+        <img src="{% static 'result.png' %}" alt="Image">
+      <div class="button-wrapper">
+        <button onclick="location.href='{% url 'discipline_results' disciplin_id %}'">ПЕРЕЙТИ</button>
+</div>
+    </div>
+{% endif %}
+
+
 </div>
 {% endblock %}
-
-
 
 
 

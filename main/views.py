@@ -147,47 +147,54 @@ class LogoutUserView(View):
 def quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
 
-    # Отбираем вопросы, соответствующие сложности пользователя и выбранной дисциплине
     if request.user.difficulty_block:
         questions = Question.objects.filter(difficulty_block=request.user.difficulty_block, disciplin=disciplin)
     else:
         questions = Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
 
-
     if request.method == 'POST':
         form = QuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
-            for (question, answer_text_or_instance) in zip(questions, form.cleaned_data.values()):
+            incorrect_answers = []
+
+            for question, answer_text_or_instance in zip(questions, form.cleaned_data.values()):
+                is_correct = False
                 if question.question_type == 'MC' and answer_text_or_instance.is_correct:
+                    is_correct = True
                     correct_answers_count += 1
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
                     if correct_answer and correct_answer.text.strip().lower() == answer_text_or_instance.strip().lower():
+                        is_correct = True
                         correct_answers_count += 1
 
-            percentage = (correct_answers_count / questions.count()) * 100
-            current_block = request.user.difficulty_block
+                if not is_correct:
+                    incorrect_answers.append({
+                        'question_id': question.id,
+                        'user_answer': str(answer_text_or_instance)  # Пример сохранения текстового ответа пользователя
+                    })
+
+            percentage = (correct_answers_count / len(questions)) * 100
             new_block = 'NN'
-            if current_block == 'NN':
+            if request.user.difficulty_block == 'NN':
                 new_block = 'H1' if percentage >= 95 else 'L1' if percentage >= 70 else 'M1'
-            elif current_block == 'L1':
+            elif request.user.difficulty_block == 'L1':
                 new_block = 'L2' if percentage >= 70 else 'L1'
-            elif current_block == 'L2':
+            elif request.user.difficulty_block == 'L2':
                 new_block = 'M1' if percentage > 80 else 'L2' if percentage >= 70 else 'L1'
-            elif current_block == 'M1':
+            elif request.user.difficulty_block == 'M1':
                 new_block = 'M2' if percentage > 80 else 'M1' if percentage >= 70 else 'L2'
-            elif current_block == 'M2':
+            elif request.user.difficulty_block == 'M2':
                 new_block = 'H1' if percentage > 80 else 'M2' if percentage >= 70 else 'M1'
-            elif current_block == 'H1':
+            elif request.user.difficulty_block == 'H1':
                 new_block = 'H2' if percentage > 80 else 'H1' if percentage >= 70 else 'M2'
-            elif current_block == 'H2':
+            elif request.user.difficulty_block == 'H2':
                 new_block = 'H2' if percentage > 90 else 'H1'
 
             request.user.difficulty_block = new_block
             request.user.save()
 
-            # Передаем данные для отображения результата в шаблон через session (можно выбрать другой способ)
             request.session['result_data'] = {
                 'correct_answers_count': correct_answers_count,
                 'percentage': percentage,
@@ -198,7 +205,8 @@ def quiz_view(request, disciplin_id):
                 user=request.user,
                 disciplin=disciplin,
                 correct_answers_count=correct_answers_count,
-                percentage=percentage
+                percentage=percentage,
+                incorrect_answers=incorrect_answers
             )
             quiz_result.save()
 
@@ -207,10 +215,8 @@ def quiz_view(request, disciplin_id):
     else:
         form = QuizForm(questions=questions)
 
+    return render(request, 'main/users/quiz.html', {'questions_and_forms': zip(questions, form), 'disciplin_id': disciplin_id})
 
-    questions_and_forms = zip(questions, form)
-    return render(request, 'main/users/quiz.html',
-                  {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
 
 
 
@@ -429,3 +435,22 @@ def final_quiz_view(request, disciplin_id):
     questions_and_forms = zip(questions, form)
     return render(request, 'main/users/final_quiz.html',
                   {'questions_and_forms': questions_and_forms, 'disciplin_id': disciplin_id})
+
+
+
+
+@student_required
+def incorrect_answers_view(request, quiz_result_id):
+    quiz_result = get_object_or_404(QuizResult, id=quiz_result_id)
+    incorrect_answers_data = quiz_result.incorrect_answers
+
+    incorrect_questions_with_answers = [
+        {
+            'question': Question.objects.get(id=answer_data['question_id']),
+            'user_answer': answer_data['user_answer'],
+            'correct_answer': ', '.join([ans.text for ans in Question.objects.get(id=answer_data['question_id']).answers.filter(is_correct=True)])
+        }
+        for answer_data in incorrect_answers_data
+    ]
+
+    return render(request, 'main/users/incorrect_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})

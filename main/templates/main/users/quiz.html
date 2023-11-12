@@ -4,7 +4,28 @@
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
 {% endblock %}
 {% block content %}
-
+    <div class="user-block-info">
+        <div class="centered-text">
+        <h2>Текущий блок сложности: <strong>
+            {% if request.user.difficulty_block == 'L1' %}
+               1/6 (Низкий 1 степени)
+            {% elif request.user.difficulty_block == 'L2' %}
+               2/6 (Низкий 2 степени)
+            {% elif request.user.difficulty_block == 'M1' %}
+               3/6 (Средний 1 степени)
+            {% elif request.user.difficulty_block == 'M2' %}
+               4/6 (Средний 2 степени)
+            {% elif request.user.difficulty_block == 'H1' %}
+               5/6 (Высокий 1 степени)
+            {% elif request.user.difficulty_block == 'H2' %}
+               6/6 (Высокий 2 степени)
+            {% elif request.user.difficulty_block == 'NN' %}
+                Входной контроль
+            {% else %}
+                Не определено
+            {% endif %}
+        </strong></h2>
+        </div></div>
 <main class="main js-main-quiz">
     <form method="post" action="{% url 'quiz' disciplin_id %}">
         {% csrf_token %}
@@ -22,7 +43,6 @@
         <div class="buts">
             <input type="submit" value="Завершить тест">
         </div>
-        <a href="{% url 'final_quiz' disciplin_id %}" class="final-quiz-button">Перейти к финальному тесту</a>
     </form>
 </main>
 
@@ -48,6 +68,10 @@
     .final-quiz-button:active {
         background-color: #99281a;
     }
+    .centered-text {
+    text-align: center;
+}
+
 </style>
 
 {% endblock %}

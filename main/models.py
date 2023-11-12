@@ -99,7 +99,7 @@ class QuizResult(models.Model):
     correct_answers_count = models.PositiveIntegerField()
     percentage = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
-
+    incorrect_answers = models.JSONField(default=list)  # Добавьте это поле
 
 
 class FinalQuizsResult(models.Model):

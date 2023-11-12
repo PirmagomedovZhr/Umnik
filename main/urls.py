@@ -26,6 +26,7 @@ path('disciplin/<int:disciplin_id>/ladder/', views.LadderView.as_view(), name='l
     path('discipline_results/<int:disciplin_id>/', views.discipline_results_view, name='discipline_results'),
     path('final_quiz/<int:disciplin_id>/', views.final_quiz_view, name='final_quiz'),
 path('discipline/<int:disciplin_id>/final_quiz_results/', views.final_quiz_results_view, name='final_quiz_results'),
+path('incorrect_answers/<int:quiz_result_id>/', views.incorrect_answers_view, name='incorrect_answers'),
 
     # ... другие пути ...
 ]
