@@ -153,6 +153,7 @@ def quiz_view(request, disciplin_id):
         questions = Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
 
     if request.method == 'POST':
+        print(request.POST)
         form = QuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
@@ -405,6 +406,7 @@ def final_quiz_view(request, disciplin_id):
         questions.extend(random.sample(list(block_questions), min(20, block_questions.count())))
 
     if request.method == 'POST':
+        print(request.POST)
         form = FinalQuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
@@ -416,11 +418,14 @@ def final_quiz_view(request, disciplin_id):
 
                 if question.question_type == 'MC':
                     correct_answer = question.answers.filter(is_correct=True).first()
+                    user_answer_obj = question.answers.filter(id=user_answer).first()
                     if correct_answer and str(correct_answer.id) == user_answer:
                         correct_answers_count += 1
+                    elif user_answer_obj:
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': str(user_answer_obj)})
                     else:
-                        # Сохраняем ID вопроса и ответ пользователя
-                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer})
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': 'Invalid answer'})
+
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
                     if correct_answer and correct_answer.text.strip().lower() == user_answer.strip().lower():
@@ -428,6 +433,7 @@ def final_quiz_view(request, disciplin_id):
                     else:
                         # Сохраняем ID вопроса и ответ пользователя
                         incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer})
+                print(user_answer)
 
             # Рассчитываем процент правильных ответов и оценку
             percentage = (correct_answers_count / len(questions)) * 100
