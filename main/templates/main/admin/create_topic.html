@@ -6,12 +6,13 @@
 {% block content %}
 <main class="main-topics">
     <h1>Создание лекции</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div class="for_button">
-            <button type="submit" class="create-group-btn">Создать</button>
-        </div>
-    </form>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="for_button">
+        <button type="submit" class="create-group-btn">Создать</button>
+    </div>
+</form>
+
 </main>
 {% endblock %}
