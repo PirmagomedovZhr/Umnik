@@ -1,0 +1,65 @@
+{% extends 'main/admin/home.html' %}
+{% load static %}
+{% block title %}
+{% endblock %}
+{% block content %}
+<div class="table-container">
+    <h1>Результаты экзаменов</h1>
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Группа</th>
+                <th>Дисциплина</th>
+                <th>Оценка</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.user.last_name }}</td>
+                    <td>{{ result.user.first_name }}</td>
+                    <td>{{ result.disciplin.groups.name }}</td>
+                    <td>{{ result.disciplin.name }}</td>
+                    <td>{{ result.grade }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">Результаты не найдены</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<style>
+    .table-container {
+        width: 80%;
+        margin: auto;
+        overflow-x: auto; /* Для горизонтальной прокрутки при большой ширине таблицы */
+    }
+    .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        margin: 20px 0;
+    }
+    .results-table th, .results-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .results-table th {
+        background-color: #f2f2f2;
+        color: black;
+    }
+    .results-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .results-table tr:hover {
+        background-color: #ddd;
+    }
+    h1 {
+    text-align:center;
+    }
+</style>
+{% endblock %}

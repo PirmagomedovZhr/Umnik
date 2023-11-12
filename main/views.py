@@ -179,7 +179,7 @@ def quiz_view(request, disciplin_id):
             percentage = (correct_answers_count / len(questions)) * 100
             new_block = 'NN'
             if request.user.difficulty_block == 'NN':
-                new_block = 'H1' if percentage >= 95 else 'L1' if percentage >= 70 else 'M1'
+                new_block = 'H1' if percentage >= 95 else 'M1' if percentage >= 70 else 'L1'
             elif request.user.difficulty_block == 'L1':
                 new_block = 'L2' if percentage >= 70 else 'L1'
             elif request.user.difficulty_block == 'L2':
@@ -493,3 +493,13 @@ def incorrect_final_quiz_view(request, final_quiz_result_id):
     ]
 
     return render(request, 'main/users/incorrect_final_quiz_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})
+
+
+
+def view_teacher_results(request):
+    if request.user.is_authenticated and request.user.position == 'Преподаватель':
+        teacher_disciplines = Disciplin.objects.filter(user=request.user)
+        results = []
+        for disciplin in teacher_disciplines:
+            results.extend(FinalQuizsResult.objects.filter(disciplin=disciplin))
+        return render(request, 'main/admin/results.html', {'results': results})
