@@ -117,10 +117,9 @@ class QuizForm(forms.Form):
         super(QuizForm, self).__init__(*args, **kwargs)
         for index, question in enumerate(self.questions, start=1):
             if question.question_type == 'MC':  # Multiple Choice Question
-                self.fields[f'question_{index}'] = forms.ModelChoiceField(
+                self.fields[f'question_{index}'] = forms.ModelMultipleChoiceField(
                     queryset=question.answers.all(),
-                    widget=forms.RadioSelect,
-                    empty_label=None,
+                    widget=forms.CheckboxSelectMultiple,
                     label=question.text,
                 )
             elif question.question_type == 'TF':  # Text Field Question
@@ -141,8 +140,8 @@ class FinalQuizForm(forms.Form):
             field_name = f'question_{question.id}'
             if question.question_type == 'MC':
                 choices = [(answer.id, answer.text) for answer in question.answers.all()]
-                self.fields[field_name] = forms.ChoiceField(
-                    choices=choices, widget=forms.RadioSelect, label=question.text)
+                self.fields[field_name] = forms.MultipleChoiceField(
+                    choices=choices, widget=forms.CheckboxSelectMultiple, label=question.text)
             elif question.question_type == 'TF':
                 self.fields[field_name] = forms.CharField(
                     widget=forms.TextInput, label=question.text)

@@ -1,3 +1,5 @@
+
+
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
@@ -13,11 +15,23 @@
             {% if item.question.image %}
                 <img src="{{ item.question.image.url }}" alt="Вопрос">
             {% endif %}
-            <p><strong>Ваш ответ:</strong> {{ item.user_answer }}</p>
+            <p><strong>Ваш ответ:</strong> <span class="user-answer" id="user-answer-{{ forloop.counter }}">{{ item.user_answer }}</span></p>
             <p><strong>Правильный ответ:</strong> {{ item.correct_answer }}</p>
         </div>
     {% endfor %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var userAnswers = document.querySelectorAll('.user-answer');
+        userAnswers.forEach(function (element) {
+            var rawText = element.textContent;
+            var cleanedText = rawText.replace(/<QuerySet \[|]>/g, '').replace(/<Answer: /g, '').replace(/>/g, '').trim();
+            element.textContent = cleanedText;
+        });
+    });
+</script>
+
 <style>.container {
     max-width: 800px;
     margin: 0 auto;

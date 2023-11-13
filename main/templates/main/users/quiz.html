@@ -29,15 +29,14 @@
 <main class="main js-main-quiz">
     <form method="post" action="{% url 'quiz' disciplin_id %}">
         {% csrf_token %}
-        {% for question, field in questions_and_forms %}
-        <p>{{ question.text }}</p>
-        {% if question.image %}
-            <img src="{{ question.image.url }}" alt="{{ question.text }}">
-        {% endif %}
-        {{ field }}
-        {% if question.question_type == 'TF' %}
-        {% endif %}
-        {% endfor %}
+{% for question, field in questions_and_forms %}
+    <p>{{ question.text }}</p>
+    {% if question.image %}
+        <img src="{{ question.image.url }}" alt="{{ question.text }}">
+    {% endif %}
+    {{ field }}
+{% endfor %}
+
 
         <br><br>
         <div class="buts">

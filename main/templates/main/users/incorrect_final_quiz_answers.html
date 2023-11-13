@@ -11,11 +11,23 @@
             {% if item.question.image %}
                 <img src="{{ item.question.image.url }}" alt="{{ item.question.text }}">
             {% endif %}
-            <p><strong>Ваш ответ:</strong> {{ item.user_answer }}</p>
+            <p><strong>Ваш ответ:</strong> <span class="user-answer">{{ item.user_answers }}</span></p>
             <p><strong>Правильный ответ:</strong> {{ item.correct_answer }}</p>
         </div>
     {% endfor %}
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Находим все элементы с классом 'user-answer' и обрабатываем их
+        document.querySelectorAll('.user-answer').forEach(function(element) {
+            let text = element.textContent;
+            // Удаляем квадратные скобки и кавычки
+            text = text.replace(/^\['|'\]$/g, '').replace(/', '/g, ', ');
+            element.textContent = text;
+        });
+    });
+</script>
+
 <style>.container {
     max-width: 800px;
     margin: 0 auto;

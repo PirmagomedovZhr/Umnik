@@ -161,9 +161,11 @@ def quiz_view(request, disciplin_id):
 
             for question, answer_text_or_instance in zip(questions, form.cleaned_data.values()):
                 is_correct = False
-                if question.question_type == 'MC' and answer_text_or_instance.is_correct:
-                    is_correct = True
-                    correct_answers_count += 1
+                if question.question_type == 'MC':
+                    correct_answers = set(question.answers.filter(is_correct=True).values_list('id', flat=True))
+                    user_answers = set([answer.id for answer in answer_text_or_instance])
+                    is_correct = correct_answers == user_answers
+                    correct_answers_count += 1 if is_correct else 0
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
                     if correct_answer and correct_answer.text.strip().lower() == answer_text_or_instance.strip().lower():
@@ -412,28 +414,30 @@ def final_quiz_view(request, disciplin_id):
             correct_answers_count = 0
             incorrect_answers = []
 
+            # ...
             for question in questions:
                 field_name = f'question_{question.id}'
-                user_answer = form.cleaned_data.get(field_name)
+                user_answer_ids = form.cleaned_data.get(field_name)
 
                 if question.question_type == 'MC':
-                    correct_answer = question.answers.filter(is_correct=True).first()
-                    user_answer_obj = question.answers.filter(id=user_answer).first()
-                    if correct_answer and str(correct_answer.id) == user_answer:
-                        correct_answers_count += 1
-                    elif user_answer_obj:
-                        incorrect_answers.append({'question_id': question.id, 'user_answer': str(user_answer_obj)})
-                    else:
-                        incorrect_answers.append({'question_id': question.id, 'user_answer': 'Invalid answer'})
+                    correct_answers = {str(answer.id) for answer in question.answers.filter(is_correct=True)}
+                    user_answers_set = set(user_answer_ids)
 
+                    # Получаем тексты ответов по их ID
+                    user_answers_texts = [answer.text for answer in question.answers.filter(id__in=user_answer_ids)]
+
+                    if correct_answers == user_answers_set:
+                        correct_answers_count += 1
+                    else:
+                        incorrect_answers.append({'question_id': question.id, 'user_answers': user_answers_texts})
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
-                    if correct_answer and correct_answer.text.strip().lower() == user_answer.strip().lower():
+                    user_answer_text = user_answer_ids  # В этом случае user_answer_ids уже содержит текст ответа
+
+                    if correct_answer and correct_answer.text.strip().lower() == user_answer_text.strip().lower():
                         correct_answers_count += 1
                     else:
-                        # Сохраняем ID вопроса и ответ пользователя
-                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer})
-                print(user_answer)
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer_text})
 
             # Рассчитываем процент правильных ответов и оценку
             percentage = (correct_answers_count / len(questions)) * 100
@@ -481,16 +485,19 @@ def incorrect_final_quiz_view(request, final_quiz_result_id):
     final_quiz_result = get_object_or_404(FinalQuizsResult, id=final_quiz_result_id)
     incorrect_answers_data = final_quiz_result.incorrect_answers
 
-    incorrect_questions_with_answers = [
-        {
-            'question': Question.objects.get(id=answer_data['question_id']),
-            'user_answer': answer_data['user_answer'],
-            'correct_answer': ', '.join([
-                ans.text for ans in Question.objects.get(id=answer_data['question_id']).answers.filter(is_correct=True)
-            ])
-        }
-        for answer_data in incorrect_answers_data
-    ]
+    incorrect_questions_with_answers = []
+    for answer_data in incorrect_answers_data:
+        question = Question.objects.get(id=answer_data['question_id'])
+        correct_answers = ', '.join([ans.text for ans in question.answers.filter(is_correct=True)])
+
+        # Получение ответов пользователя
+        user_answers = answer_data.get('user_answers') or answer_data.get('user_answer')
+
+        incorrect_questions_with_answers.append({
+            'question': question,
+            'user_answers': user_answers,  # передаем как есть, без изменений
+            'correct_answer': correct_answers
+        })
 
     return render(request, 'main/users/incorrect_final_quiz_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})
 
