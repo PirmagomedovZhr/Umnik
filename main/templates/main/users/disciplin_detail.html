@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
@@ -15,25 +8,41 @@
     <div class="containers">
         <div class="sectionss">
             {% for topic in topics %}
-            <div class="sections">
-                <div class="section-title">
-                    <!-- Название лекции будет служить ссылкой на скачивание файла -->
-                    {% if topic.file %}
-                    <a href="{{ topic.file.url }}" download="{{ topic.title|slugify }}">{{ topic.title }}</a>
-                    {% else %}
-                    <span>Файл лекции отсутствует</span>
-                    {% endif %}
-                </div>
-                {% if topic.video_url %}
-                <div class="section-video">
-                    <a href="{{ topic.video_url }}" target="_blank">Перейти к видео</a>
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
+<div class="sections" style="background-color: {{ topic.file_downloaded|yesno:"darkblue,blue" }};">
+
+    <div class="section-title">
+        <!-- Изменяем ссылку на скачивание -->
+        {% if topic.file %}
+        <a href="{% url 'download_file' topic.id %}" data-download>{{ topic.title }}</a>
+        {% else %}
+        <span>Файл лекции отсутствует</span>
+        {% endif %}
+    </div>
+    {% if topic.video_url %}
+    <div class="section-video">
+        <a href="{{ topic.video_url }}" target="_blank">Перейти к видео</a>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+
         </div>
     </div>
 </main>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const downloadLinks = document.querySelectorAll("a[data-download]");
+
+        downloadLinks.forEach(function(link) {
+            link.addEventListener("click", function() {
+                setTimeout(function() {
+                    location.reload(); // Обновляем страницу
+                }, 1000); // Можно установить задержку, например, в 1 секунду
+            });
+        });
+    });
+</script>
+
 <style>
 .main-disciplins {
     display: flex;

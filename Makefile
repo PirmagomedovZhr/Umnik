@@ -1,7 +1,7 @@
 local_up:
 	docker-compose build
 	chmod -R 777 ./media/
-	docker-compose up -d
+	docker-compose up
 
 local_down:
 	docker-compose down

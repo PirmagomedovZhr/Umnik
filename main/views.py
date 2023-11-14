@@ -337,6 +337,22 @@ def disciplin_detail_view(request, disciplin_id):
     return render(request, 'main/users/disciplin_detail.html', {'disciplin': disciplin, 'topics': topics})
 
 
+
+from django.http import FileResponse
+import os
+from django.conf import settings
+
+def download_file(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id)
+    file_path = os.path.join(settings.MEDIA_ROOT, topic.file.name)
+
+    if os.path.exists(file_path):
+        topic.file_downloaded = True
+        topic.save(update_fields=['file_downloaded'])
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=topic.file.name)
+
+
+
 @teacher_required
 def create_topic(request):
     if request.method == 'POST':
@@ -405,7 +421,7 @@ def final_quiz_view(request, disciplin_id):
     questions = []
     for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
         block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
-        questions.extend(random.sample(list(block_questions), min(20, block_questions.count())))
+        questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
 
     if request.method == 'POST':
         print(request.POST)

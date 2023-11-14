@@ -59,7 +59,7 @@ class Topic(models.Model):
     )
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE, related_name='topics')
     video_url = models.URLField('Ссылка на видео', blank=True)
-
+    file_downloaded = models.BooleanField('Файл скачан', default=False)
     def __str__(self):
         return self.title
 

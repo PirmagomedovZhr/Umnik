@@ -44,8 +44,103 @@
         </div>
     </form>
 </main>
+<div id="quiz-completion-modal" style="display:none;">
+    <p>Тест завершен!</p>
+    <div class="cent">
+    <button id="view-results">Результаты</button>
+    <button id="go-to-disciplines">Дисциплины</button></div>
+
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const modal = document.getElementById('quiz-completion-modal');
+    const mainContent = document.querySelector('.main'); // Замените '.main' на селектор вашего основного контента
+    const viewResultsBtn = document.getElementById('view-results');
+    const goToDisciplinesBtn = document.getElementById('go-to-disciplines');
+    const disciplinId = "{{ disciplin_id }}"; // Получение ID дисциплины из контекста Django
+
+    // Проверяем, было ли модальное окно уже показано
+    if (localStorage.getItem('modalShown') === 'true') {
+        modal.style.display = 'block';
+        mainContent.classList.add('no-interaction'); // Добавляем класс для блокировки взаимодействия
+    }
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Предотвращаем стандартную отправку формы
+        modal.style.display = 'block'; // Показываем модальное окно
+        mainContent.classList.add('no-interaction'); // Добавляем класс для блокировки взаимодействия
+        localStorage.setItem('modalShown', 'true'); // Сохраняем состояние модального окна
+    });
+
+    viewResultsBtn.addEventListener('click', function () {
+        window.location.href = '/discipline_results/' + disciplinId + '/'; // Динамическое формирование URL
+        mainContent.classList.remove('no-interaction'); // Убираем класс для блокировки взаимодействия
+        localStorage.removeItem('modalShown'); // Сбрасываем состояние модального окна
+    });
+
+    goToDisciplinesBtn.addEventListener('click', function () {
+        window.location.href = '/disciplins/'; // Перенаправление на список дисциплин
+        mainContent.classList.remove('no-interaction'); // Убираем класс для блокировки взаимодействия
+        localStorage.removeItem('modalShown'); // Сбрасываем состояние модального окна
+    });
+});
+</script>
+
 
 <style>
+    .no-interaction {
+    pointer-events: none;
+    opacity: 0.5; /* Необязательно, если хотите сделать фон менее заметным */
+}
+    #quiz-completion-modal .cent {text-align:center;}
+    #quiz-completion-modal {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f8f9fa; /* Светлый фон */
+        padding: 40px; /* Больше отступов для большего размера */
+        border-radius: 15px; /* Скругленные углы */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Тень для лучшей видимости */
+        z-index: 1000;
+        width: 40%; /* Ширина модального окна */
+        max-width: 600px; /* Максимальная ширина */
+    }
+
+    #quiz-completion-modal p {
+        font-size: 50px; /* Больше размер шрифта для текста */
+        color: #00FF00; /* Темно-серый цвет текста */
+        margin-bottom: 30px; /* Отступ снизу для текста */
+        text-align: center; /* Выравнивание текста по центру */
+    }
+
+    #quiz-completion-modal button {
+        padding: 15px 30px; /* Больше отступы для кнопок */
+        font-size: 18px; /* Больше размер шрифта для кнопок */
+        color: white; /* Белый текст на кнопках */
+        border: none; /* Убрать границу */
+        border-radius: 8px; /* Скругленные углы для кнопок */
+        margin-right: 10px; /* Отступ справа для кнопки */
+        cursor: pointer; /* Курсор в виде указателя */
+        transition: background-color 0.3s; /* Плавный переход цвета */
+    }
+
+    #view-results {
+        background-color: #007bff; /* Синий цвет для кнопки дисциплин */
+    }
+
+    #view-results:hover {
+        background-color: #0069d9; /* Темнее синий при наведении */
+    }
+
+    #go-to-disciplines {
+        background-color: #007bff; /* Синий цвет для кнопки дисциплин */
+    }
+
+    #go-to-disciplines:hover {
+        background-color: #0069d9; /* Темнее синий при наведении */
+    }
     .final-quiz-button {
         display: inline-block;
         padding: 10px 20px;

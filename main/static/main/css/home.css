@@ -1,3 +1,5 @@
+
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -63,9 +65,10 @@ margin-bottom: 30px;
 }
 
 .card {
-    width: 520px;
-    height: 670px;
+    width: 350px; /* Уже установленная ширина */
+    min-height: 450px; /* Минимальная высота */
     border-radius: 10px;
+
 }
 
 .card:last-child {
@@ -74,32 +77,36 @@ margin-bottom: 30px;
 
 
 .card h2 {
-    font-size: 50px;
-    margin-bottom: 0px; /* Отступ снизу для заголовка */
-    margin-left: 30px;
-    color: white;
+    font-size: 20px;
+    margin-bottom: 0;
     margin-top: 20px;
-font-weight: normal;
+    margin-left: 30px;
+    padding-right: 20px;
+    color: white;
+    font-weight: normal;
+    word-wrap: break-word; /* Позволяет тексту переноситься на новую строку */
 }
+
 
 .card p {
 margin-top: 10px;
-    font-size: 20px; /* Размер шрифта для текста */
+    font-size: 16px; /* Размер шрифта для текста */
     margin-bottom: 20px; /* Отступ снизу для текста */
     margin-left: 30px;
     color: white;
 }
 
 .card img {
-    width: 100%; /* Максимальная ширина изображения */
+    width: 100%; /* Ширина по размеру карточки */
     height: 60%; /* Автоматическая высота изображения */
+    object-fit: cover; /* Обрезает изображение для заполнения контейнера */
     margin-bottom: 20px; /* Отступ снизу для изображения */
 
 }
 
 .card .button-wrapper button {
-    padding: 25px 120px; /* Отступы внутри кнопки */
-    font-size: 30px; /* Размер шрифта для текста кнопки */
+    padding: 20px 100px; /* Отступы внутри кнопки */
+    font-size: 20px; /* Размер шрифта для текста кнопки */
     cursor: pointer; /* Стиль курсора для кнопки */
     border: none; /* Удаление границы кнопки */
     border-radius: 15px; /* Скругление углов кнопки */

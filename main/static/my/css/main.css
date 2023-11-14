@@ -92,17 +92,19 @@ body {
 	font-family: Arial;
 	font-weight: 600;
 	text-transform: uppercase;
-	font-size: calc(var(--index) * .71);
+	font-size: calc(var(--index) * 1.0); /* Увеличение размера шрифта */
 	letter-spacing: -.02vw;
-	padding: calc(var(--index) * .7) calc(var(--index) * 1.25);
+	padding: calc(var(--index) * 1.0) calc(var(--index) * 2.0); /* Увеличение внутренних отступов */
 	background-color: transparent;
 	color: #fff;
 	border-radius: 10em;
-	border: rgb(255 255 255 / .4) 3px solid;
+	border: rgb(255 255 255 / .4) 4px solid; /* Опционально, увеличение толщины границы */
 	outline: none;
 	cursor: pointer;
 	margin-top: calc(var(--index) * 2.5);
 }
+
+
 .layer-4, .layer-5, .layer-6 {
 	pointer-events: none;
 }
