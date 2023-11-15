@@ -23,7 +23,7 @@ class User(AbstractUser):
     position = models.CharField('Должность', max_length=20, choices=positions, default='Студент')
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='NN', blank=True)
     disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
-
+    exam_attempts = models.PositiveIntegerField(default=2)
 
 class Groups(models.Model):
     name = models.CharField(max_length=100)
@@ -109,6 +109,8 @@ class FinalQuizsResult(models.Model):
     disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE)  # добавьте эту строку
     correct_answers_count = models.PositiveIntegerField(null=True)
     percentage = models.FloatField(null=True)
-    grade = models.PositiveIntegerField(null=True)
+    grade = models.PositiveIntegerField(null=True, default=2)
     date = models.DateTimeField(auto_now_add=True)
     incorrect_answers = models.JSONField(default=list)
+    start_time = models.DateTimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)

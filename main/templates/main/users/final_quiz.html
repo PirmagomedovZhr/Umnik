@@ -9,7 +9,7 @@
     <p>Оставшееся время на тест: {{ remaining_time }}</p></div>
 {% endif %}
 <main class="main js-main-quiz">
-
+<div id="timer" class="timer"></div>
     <form method="post" class="quiz-form">
         {% csrf_token %}
         {% for field in form %}
@@ -26,6 +26,30 @@
     </form>
 </main>
 <style>
+    .timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #4CAF50;  /* Зеленый фон */
+    color: white;  /* Белый текст */
+    border-radius: 10px;  /* Скругленные углы */
+    padding: 10px 20px;  /* Внутренний отступ */
+    font-size: 1.5em;  /* Размер шрифта */
+    font-weight: bold;  /* Жирный текст */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);  /* Тень */
+    margin: 20px;  /* Внешний отступ */
+}
+
+.timer.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        background-color: #e74c3c;  /* Красный фон при мигании */
+    }
+}
+
     .abcd {
     text-align: center;
     }
@@ -88,5 +112,45 @@
         background-color: #4cae4c;
     }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Получение времени начала теста из контекста, переданного из Django
+    var startTime = {{ start_time|date:"U" }};
+    var duration = 10; // Для теста установлено 10 секунд
+    var endTime = startTime + duration;
+
+    var countdown = function() {
+        var now = Math.floor(Date.now() / 1000);
+        var timeLeft = endTime - now;
+        var timerElement = document.querySelector('#timer');
+
+        if (timerElement) {
+            if (timeLeft < 0) {
+                // Если время истекло
+                clearInterval(interval);
+                timerElement.textContent = 'Время вышло';
+                timerElement.classList.add('blink'); // Добавляем класс для мигания
+                // Отправка формы
+                document.querySelector('.quiz-form').submit();
+            } else {
+                // Обновление отображаемого времени
+                var minutes = Math.floor(timeLeft / 60);
+                var seconds = timeLeft % 60;
+                timerElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+                if (timeLeft < 60) { // Если осталось меньше минуты
+                    timerElement.classList.add('blink');
+                } else {
+                    timerElement.classList.remove('blink');
+                }
+            }
+        }
+    };
+
+    var interval = setInterval(countdown, 1000);
+});
+</script>
+
+
 
 {% endblock %}

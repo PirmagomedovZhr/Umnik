@@ -48,9 +48,21 @@
         <p></p>
         <img src="{% static '4321.png' %}" alt="Image">
       <div class="button-wrapper">
-        <button onclick="location.href='{% url 'final_quiz' disciplin_id %}'">ПЕРЕЙТИ</button>
+        <button onclick="confirmExamStart('{% url 'final_quiz' disciplin_id %}')">ПЕРЕЙТИ</button>
 </div>
     </div>
+<script>
+function confirmExamStart(url) {
+    // Проверка, идет ли сейчас тест
+    {% if not final_quiz_in_progress %}  // Предполагается, что вы передали это значение из Django в шаблон
+    if (confirm("Вы точно хотите начать итоговый тест?")) {
+        window.location.href = url;
+    }
+    {% else %}
+    window.location.href = url;  // Непосредственное перенаправление, если тест уже идет
+    {% endif %}
+}
+</script>
 
 
 <style>

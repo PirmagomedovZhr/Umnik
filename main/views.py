@@ -89,7 +89,16 @@ class LadderView(View):
 
     def get(self, request, disciplin_id):
         if request.user.is_authenticated and request.user.position == 'Студент':
-            return render(request, self.template_name, {'disciplin_id': disciplin_id})
+            final_quiz_in_progress = FinalQuizsResult.objects.filter(
+                user=request.user,
+                disciplin=Disciplin.objects.get(id=disciplin_id),
+                is_completed=False
+            ).exists()
+
+            return render(request, self.template_name, {
+                'disciplin_id': disciplin_id,
+                'final_quiz_in_progress': final_quiz_in_progress
+            })
         else:
             return HttpResponseRedirect('/signin')
 
@@ -412,10 +421,29 @@ def final_quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
     user = request.user
 
-    # Проверяем количество попыток пользователя
-    user_quiz_attempts = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).count()
-    if user_quiz_attempts >= 2:
-        return redirect('ladder', disciplin_id=disciplin_id)
+    # Обновление exam_attempts пользователя на основе количества завершенных финальных тестов
+    user.exam_attempts = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin, is_completed=True).count()
+    user.save()
+
+    # Проверка, не превышено ли максимальное количество попыток
+    if user.exam_attempts >= 2:
+        return redirect('disciplin')  # Перенаправление на страницу с сообщением о достижении лимита попыток
+
+    # Проверяем, существует ли последний результат теста и не завершен ли он
+    final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).last()
+    if final_quiz_result and not final_quiz_result.is_completed:
+        time_passed = timezone.now() - final_quiz_result.start_time
+        if time_passed.total_seconds() > 10:  # Проверка на истечение времени
+            final_quiz_result.is_completed = True
+            final_quiz_result.save()
+            # Здесь можно добавить логику для перенаправления на страницу с уведомлением об истечении времени
+            return redirect('disciplin')
+
+    if request.method == 'GET':
+        # Если теста нет или он завершен, создаем новый экземпляр теста
+        if final_quiz_result is None or final_quiz_result.is_completed:
+            final_quiz_result = FinalQuizsResult.objects.create(user=user, disciplin=disciplin, start_time=timezone.now())
+            user.exam_attempts -= 1
 
     # Выбираем вопросы из разных блоков
     questions = []
@@ -424,7 +452,13 @@ def final_quiz_view(request, disciplin_id):
         questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
 
     if request.method == 'POST':
-        print(request.POST)
+        final_quiz_result = FinalQuizsResult.objects.get(user=user, disciplin=disciplin, start_time__isnull=False)
+        time_passed = timezone.now() - final_quiz_result.start_time
+
+        if time_passed.total_seconds() > 10:  # 7200 секунд = 2 часа
+            # Обработка истечения времени
+            return redirect('disciplin')  # Перенаправление на страницу с сообщением об истечении времени
+
         form = FinalQuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
@@ -468,12 +502,14 @@ def final_quiz_view(request, disciplin_id):
                 grade=grade,
                 incorrect_answers=incorrect_answers
             )
+            final_quiz_result.is_completed = True
+            final_quiz_result.save()
 
             return redirect('disciplin')  # Перенаправляем на страницу с результатами
     else:
         form = FinalQuizForm(questions=questions)
 
-    return render(request, 'main/users/final_quiz.html', {'form': form, 'disciplin_id': disciplin_id})
+    return render(request, 'main/users/final_quiz.html', {'form': form, 'disciplin_id': disciplin_id, 'start_time': final_quiz_result.start_time })
 
 
 
