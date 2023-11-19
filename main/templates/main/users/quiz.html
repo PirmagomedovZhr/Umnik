@@ -44,48 +44,7 @@
         </div>
     </form>
 </main>
-<div id="quiz-completion-modal" style="display:none;">
-    <p>Тест завершен!</p>
-    <div class="cent">
-    <button id="view-results">Результаты</button>
-    <button id="go-to-disciplines">Дисциплины</button></div>
 
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('form');
-    const modal = document.getElementById('quiz-completion-modal');
-    const mainContent = document.querySelector('.main'); // Замените '.main' на селектор вашего основного контента
-    const viewResultsBtn = document.getElementById('view-results');
-    const goToDisciplinesBtn = document.getElementById('go-to-disciplines');
-    const disciplinId = "{{ disciplin_id }}"; // Получение ID дисциплины из контекста Django
-
-    // Проверяем, было ли модальное окно уже показано
-    if (localStorage.getItem('modalShown') === 'true') {
-        modal.style.display = 'block';
-        mainContent.classList.add('no-interaction'); // Добавляем класс для блокировки взаимодействия
-    }
-
-    form.addEventListener('submit', function (event) {
-        event.preventDefault(); // Предотвращаем стандартную отправку формы
-        modal.style.display = 'block'; // Показываем модальное окно
-        mainContent.classList.add('no-interaction'); // Добавляем класс для блокировки взаимодействия
-        localStorage.setItem('modalShown', 'true'); // Сохраняем состояние модального окна
-    });
-
-    viewResultsBtn.addEventListener('click', function () {
-        window.location.href = '/discipline_results/' + disciplinId + '/'; // Динамическое формирование URL
-        mainContent.classList.remove('no-interaction'); // Убираем класс для блокировки взаимодействия
-        localStorage.removeItem('modalShown'); // Сбрасываем состояние модального окна
-    });
-
-    goToDisciplinesBtn.addEventListener('click', function () {
-        window.location.href = '/disciplins/'; // Перенаправление на список дисциплин
-        mainContent.classList.remove('no-interaction'); // Убираем класс для блокировки взаимодействия
-        localStorage.removeItem('modalShown'); // Сбрасываем состояние модального окна
-    });
-});
-</script>
 
 
 <style>

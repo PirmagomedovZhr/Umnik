@@ -102,7 +102,8 @@ class QuizResult(models.Model):
     percentage = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
     incorrect_answers = models.JSONField(default=list)  # Добавьте это поле
-
+    difficulty_block_before_test = models.CharField(max_length=50)  # Сохранение блока сложности до теста
+    difficulty_block_after_test = models.CharField(max_length=50)  # Сохранение блока сложности после теста
 
 class FinalQuizsResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

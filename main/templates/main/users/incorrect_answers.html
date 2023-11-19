@@ -6,6 +6,14 @@
 {% endblock %}
 {% block content %}
 <div class="container">
+<div class="abcde">
+    <h1>Результаты теста</h1>
+    <p><strong>Вопросов в тесте:</strong> {{ total_questions }}</p>
+    <p><strong>Правильных ответов:</strong> {{ correct_answers }}</p>
+    <p><strong>Блок сложности до прохождения теста:</strong> {{ previous_difficulty_name }}</p>
+    <p><strong>Блок сложности после прохождения теста:</strong> {{ current_difficulty_name }}</p>
+</div>
+
     <div class="abcd">
     <h1>Некорректные ответы</h1>
     </div>
@@ -39,6 +47,31 @@
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.abcde {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.abcde h1 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.abcde p {
+    font-size: 1.1em;
+    color: #666;
+    margin: 5px 0;
+}
+
+.abcde p strong {
+    color: #333;
+    font-weight: bold;
 }
 
 .abcd {text-align:center;}

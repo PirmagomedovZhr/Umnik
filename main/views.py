@@ -155,14 +155,12 @@ class LogoutUserView(View):
 @student_required
 def quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+    questions = Question.objects.filter(difficulty_block=request.user.difficulty_block, disciplin=disciplin) if request.user.difficulty_block else Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
 
-    if request.user.difficulty_block:
-        questions = Question.objects.filter(difficulty_block=request.user.difficulty_block, disciplin=disciplin)
-    else:
-        questions = Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
+    # Сохраняем текущий блок сложности до начала теста
+    current_difficulty = request.user.difficulty_block
 
     if request.method == 'POST':
-        print(request.POST)
         form = QuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
@@ -174,61 +172,54 @@ def quiz_view(request, disciplin_id):
                     correct_answers = set(question.answers.filter(is_correct=True).values_list('id', flat=True))
                     user_answers = set([answer.id for answer in answer_text_or_instance])
                     is_correct = correct_answers == user_answers
-                    correct_answers_count += 1 if is_correct else 0
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
-                    if correct_answer and correct_answer.text.strip().lower() == answer_text_or_instance.strip().lower():
-                        is_correct = True
-                        correct_answers_count += 1
+                    is_correct = correct_answer and correct_answer.text.strip().lower() == answer_text_or_instance.strip().lower()
 
+                correct_answers_count += is_correct
                 if not is_correct:
-                    incorrect_answers.append({
-                        'question_id': question.id,
-                        'user_answer': str(answer_text_or_instance)  # Пример сохранения текстового ответа пользователя
-                    })
+                    incorrect_answers.append({'question_id': question.id, 'user_answer': str(answer_text_or_instance)})
 
             percentage = (correct_answers_count / len(questions)) * 100
+
+            # Логика определения нового блока сложности
             new_block = 'NN'
-            if request.user.difficulty_block == 'NN':
+            if current_difficulty == 'NN':
                 new_block = 'H1' if percentage >= 95 else 'M1' if percentage >= 70 else 'L1'
-            elif request.user.difficulty_block == 'L1':
+            elif current_difficulty == 'L1':
                 new_block = 'L2' if percentage >= 70 else 'L1'
-            elif request.user.difficulty_block == 'L2':
+            elif current_difficulty == 'L2':
                 new_block = 'M1' if percentage > 80 else 'L2' if percentage >= 70 else 'L1'
-            elif request.user.difficulty_block == 'M1':
+            elif current_difficulty == 'M1':
                 new_block = 'M2' if percentage > 80 else 'M1' if percentage >= 70 else 'L2'
-            elif request.user.difficulty_block == 'M2':
+            elif current_difficulty == 'M2':
                 new_block = 'H1' if percentage > 80 else 'M2' if percentage >= 70 else 'M1'
-            elif request.user.difficulty_block == 'H1':
+            elif current_difficulty == 'H1':
                 new_block = 'H2' if percentage > 80 else 'H1' if percentage >= 70 else 'M2'
-            elif request.user.difficulty_block == 'H2':
+            elif current_difficulty == 'H2':
                 new_block = 'H2' if percentage > 90 else 'H1'
-
-            request.user.difficulty_block = new_block
-            request.user.save()
-
-            request.session['result_data'] = {
-                'correct_answers_count': correct_answers_count,
-                'percentage': percentage,
-                'new_block': new_block
-            }
 
             quiz_result = QuizResult(
                 user=request.user,
                 disciplin=disciplin,
                 correct_answers_count=correct_answers_count,
                 percentage=percentage,
-                incorrect_answers=incorrect_answers
+                incorrect_answers=incorrect_answers,
+                difficulty_block_before_test=current_difficulty,
+                difficulty_block_after_test=new_block
             )
             quiz_result.save()
 
-            return redirect('disciplin')
+            # Обновляем блок сложности пользователя
+            request.user.difficulty_block = new_block
+            request.user.save()
+
+            return HttpResponseRedirect(reverse('incorrect_answers', args=[quiz_result.id]))
 
     else:
         form = QuizForm(questions=questions)
 
     return render(request, 'main/users/quiz.html', {'questions_and_forms': zip(questions, form), 'disciplin_id': disciplin_id})
-
 
 
 
@@ -513,7 +504,17 @@ def final_quiz_view(request, disciplin_id):
 
 
 
-
+def get_difficulty_name(code):
+    difficulty_names = {
+        'L1': 'Низкий 1 (1/6)',
+        'L2': 'Низкий 2 (2/6)',
+        'M1': 'Средний 1 (3/6)',
+        'M2': 'Средний 2 (4/6)',
+        'H1': 'Высокий 1 (5/6)',
+        'H2': 'Высокий 2 (6/6)',
+        'NN': 'Вводный (Входной контроль)',
+    }
+    return difficulty_names.get(code, 'Неизвестный')
 
 @student_required
 def incorrect_answers_view(request, quiz_result_id):
@@ -529,7 +530,22 @@ def incorrect_answers_view(request, quiz_result_id):
         for answer_data in incorrect_answers_data
     ]
 
-    return render(request, 'main/users/incorrect_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})
+    total_questions = len(quiz_result.incorrect_answers) + quiz_result.correct_answers_count
+    correct_answers = quiz_result.correct_answers_count
+    previous_difficulty = quiz_result.difficulty_block_before_test
+    current_difficulty = quiz_result.difficulty_block_after_test
+    previous_difficulty_name = get_difficulty_name(previous_difficulty)
+    current_difficulty_name = get_difficulty_name(current_difficulty)
+    context = {
+        'quiz_result': quiz_result,
+        'incorrect_questions_with_answers': incorrect_questions_with_answers,
+        'total_questions': total_questions,
+        'correct_answers': correct_answers,
+        'previous_difficulty_name': previous_difficulty_name,
+        'current_difficulty_name': current_difficulty_name,
+    }
+
+    return render(request, 'main/users/incorrect_answers.html', context)
 
 
 
