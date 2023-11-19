@@ -13,8 +13,7 @@
     </div>
     <main class="main js-main-quiz">
         <div id="timer" class="timer"></div>
-        <form method="post" class="quiz-form">
-            action="{% url 'final_quiz' disciplin_id %}"
+        <form method="post" class="quiz-form" action="{% url 'final_quiz' disciplin_id %}">
             {% csrf_token %}
             {% for field in form %}
                 <div class="question">
