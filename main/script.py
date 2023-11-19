@@ -3,29 +3,23 @@ from .models import User
 
 # Предполагается, что у администратора установлены флаги is_staff и is_superuser
 admin_user = User.objects.filter(is_staff=True, is_superuser=True).first()
-def duplicate_discipline(original_discipline_name, new_group_name, new_discipline_name):
-    # Создание новой группы
-    new_group = Groups(name=new_group_name, user=admin_user)
-    new_group.save()
-    # Создание новой дисциплины
-    new_discipline = Disciplin(name=new_discipline_name, groups=new_group, user=admin_user)
-    new_discipline.save()
+def copy_questions(source_discipline_name, target_discipline_name):
+    source_discipline = Disciplin.objects.get(name=source_discipline_name)
+    target_discipline = Disciplin.objects.get(name=target_discipline_name)
 
-    # Копирование лекций (Topic)
-    for topic in Topic.objects.filter(disciplin__name=original_discipline_name):
-        topic.pk = None  # Сброс первичного ключа для создания нового экземпляра
-        topic.disciplin = new_discipline
-        topic.save()
+    for block in User.difficulty_blocks:
+        # Получение по 5 вопросов каждого блока сложности
+        questions = Question.objects.filter(disciplin=source_discipline, difficulty_block=block[0])[:5]
 
-    # Копирование вопросов и ответов
-    for question in Question.objects.filter(disciplin__name=original_discipline_name):
-        answers = list(question.answers.all())
-        question.pk = None
-        question.disciplin = new_discipline
-        question.save()
+        for question in questions:
+            # Копирование вопросов
+            answers = list(question.answers.all())
+            question.pk = None
+            question.disciplin = target_discipline
+            question.save()
 
-        # Копирование ответов
-        for answer in answers:
-            answer.pk = None
-            answer.question = question
-            answer.save()
+            # Копирование ответов
+            for answer in answers:
+                answer.pk = None
+                answer.question = question
+                answer.save()
