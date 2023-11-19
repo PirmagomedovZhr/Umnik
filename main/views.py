@@ -458,9 +458,12 @@ def final_quiz_view(request, disciplin_id):
         questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
 
     if request.method == 'POST':
+        print(request.user)
         final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).latest('start_time')
         form = FinalQuizForm(request.POST, questions=questions)
+        print("До формы")
         if form.is_valid():
+            print("После формы")
             correct_answers_count = 0
             incorrect_answers = []
             total_questions_count = len(questions)
