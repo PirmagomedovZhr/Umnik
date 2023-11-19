@@ -9,7 +9,7 @@ def copy_questions(source_discipline_name, target_discipline_name):
 
     for block in User.difficulty_blocks:
         # Получение по 5 вопросов каждого блока сложности
-        questions = Question.objects.filter(disciplin=source_discipline, difficulty_block=block[0])[:5]
+        questions = Question.objects.filter(disciplin=source_discipline, difficulty_block=block[0])[:15]
 
         for question in questions:
             # Копирование вопросов
