@@ -445,32 +445,19 @@ def final_quiz_view(request, disciplin_id):
     if final_quiz_attempts >= 2:
         return redirect('disciplin')  # Перенаправление на страницу с ограничением попыток
 
-    if request.method == 'GET':
-        # Создаем новый результат теста, если это новая попытка
-        final_quiz_result, created = FinalQuizsResult.objects.get_or_create(
-            user=user, disciplin=disciplin, is_completed=False,
-            defaults={'start_time': timezone.now()}
-        )
+    # Создаем новый результат теста или получаем последний незавершенный
+    final_quiz_result, created = FinalQuizsResult.objects.get_or_create(
+        user=user, disciplin=disciplin, is_completed=False,
+        defaults={'start_time': timezone.now()}
+    )
 
-
-    questions = []
-    for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
-        block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
-        questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
-    question_ids = [q.id for q in questions]
-    request.session['question_ids'] = question_ids
     if request.method == 'POST':
         question_ids = request.session.get('question_ids')
         questions = Question.objects.filter(id__in=question_ids)
-        print(request.POST)
-        final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).latest('start_time')
         form = FinalQuizForm(request.POST, questions=questions)
-        print("До формы")
         if form.is_valid():
-            print("После формы")
             correct_answers_count = 0
             incorrect_answers = []
-            total_questions_count = len(questions)
             for question in questions:
                 field_name = f'question_{question.id}'
                 user_answer_ids = form.cleaned_data.get(field_name)
@@ -479,38 +466,40 @@ def final_quiz_view(request, disciplin_id):
                     correct_answers = {str(answer.id) for answer in question.answers.filter(is_correct=True)}
                     user_answers_set = set(user_answer_ids)
 
-                    user_answers_texts = [answer.text for answer in question.answers.filter(id__in=user_answer_ids)]
-
                     if correct_answers == user_answers_set:
                         correct_answers_count += 1
                     else:
-                        incorrect_answers.append({'question_id': question.id, 'user_answers': user_answers_texts})
+                        incorrect_answers.append({'question_id': question.id, 'user_answers': [answer.text for answer in question.answers.filter(id__in=user_answer_ids)]})
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
-                    user_answer_text = user_answer_ids
-
-                    if correct_answer and correct_answer.text.strip().lower() == user_answer_text.strip().lower():
+                    if correct_answer and correct_answer.text.strip().lower() == user_answer_ids.strip().lower():
                         correct_answers_count += 1
                     else:
-                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer_text})
-
-            percentage = (correct_answers_count / len(questions)) * 100
-            grade = 5 if percentage >= 90 else 4 if percentage >= 80 else 3 if percentage >= 70 else 2
+                        incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer_ids})
 
             final_quiz_result.correct_answers_count = correct_answers_count
-            final_quiz_result.percentage = percentage
-            final_quiz_result.grade = grade
+            final_quiz_result.percentage = (correct_answers_count / len(questions)) * 100
+            final_quiz_result.grade = 5 if final_quiz_result.percentage >= 90 else 4 if final_quiz_result.percentage >= 80 else 3 if final_quiz_result.percentage >= 70 else 2
             final_quiz_result.incorrect_answers = incorrect_answers
             final_quiz_result.is_completed = True
-            final_quiz_result.total_questions_count = total_questions_count
+            final_quiz_result.total_questions_count = len(questions)
             final_quiz_result.save()
 
-
             return redirect('incorrect_final_quiz', final_quiz_result_id=final_quiz_result.id)
-
         else:
             print("Форма невалидна:", form.errors)
     else:
+        if created or 'question_ids' not in request.session:
+            questions = []
+            for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
+                block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
+                questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
+            question_ids = [q.id for q in questions]
+            request.session['question_ids'] = question_ids
+        else:
+            question_ids = request.session['question_ids']
+            questions = Question.objects.filter(id__in=question_ids)
+
         form = FinalQuizForm(questions=questions)
 
     return render(request, 'main/users/final_quiz.html', {
@@ -519,6 +508,7 @@ def final_quiz_view(request, disciplin_id):
         'remaining_attempts': 2 - final_quiz_attempts,
         'start_time': final_quiz_result.start_time
     })
+
 
 
 
