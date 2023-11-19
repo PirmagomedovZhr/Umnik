@@ -30,5 +30,5 @@ path('incorrect_answers/<int:quiz_result_id>/', views.incorrect_answers_view, na
 path('incorrect_final_quiz/<int:final_quiz_result_id>/', views.incorrect_final_quiz_view, name='incorrect_final_quiz'),
 path('results/', views.view_teacher_results, name='view_teacher_results'),
 path('download/<int:topic_id>/', views.download_file, name='download_file'),
-    # ... другие пути ...
+    path('run-script/', views.run_script_view, name='run-script'),
 ]

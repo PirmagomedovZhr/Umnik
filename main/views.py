@@ -591,6 +591,12 @@ def view_teacher_results(request):
 
 
 
+from .script import duplicate_discipline
+from django.http import HttpResponse
+
+def run_script_view(request):
+    duplicate_discipline("Информатика", "y034", "Программирование")
+    return HttpResponse("Скрипт выполнен успешно.")
 
 
 
