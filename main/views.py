@@ -455,7 +455,7 @@ def final_quiz_view(request, disciplin_id):
         final_quiz_result = FinalQuizsResult.objects.get(user=user, disciplin=disciplin, start_time__isnull=False)
         time_passed = timezone.now() - final_quiz_result.start_time
 
-        if time_passed.total_seconds() > 10:  # 7200 секунд = 2 часа
+        if time_passed.total_seconds() > 7200:  # 7200 секунд = 2 часа
             # Обработка истечения времени
             return redirect('disciplin')  # Перенаправление на страницу с сообщением об истечении времени
 

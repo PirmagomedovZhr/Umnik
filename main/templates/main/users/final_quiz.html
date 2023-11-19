@@ -114,10 +114,10 @@
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Получение времени начала теста из контекста, переданного из Django
     var startTime = {{ start_time|date:"U" }};
-    var duration = 10; // Для теста установлено 10 секунд
+    var duration = 7200;
     var endTime = startTime + duration;
+
 
     var countdown = function() {
         var now = Math.floor(Date.now() / 1000);
