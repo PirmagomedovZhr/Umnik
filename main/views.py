@@ -84,12 +84,22 @@ class SignInView(View):
         })
 
 
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
+from django.views import View
+from .models import Disciplin, UserDisciplineDifficulty, FinalQuizsResult
+
 class LadderView(View):
     template_name = 'main/users/ladder.html'
 
     def get(self, request, disciplin_id):
         if request.user.is_authenticated and request.user.position == 'Студент':
-            disciplin = Disciplin.objects.get(id=disciplin_id)
+            disciplin = get_object_or_404(Disciplin, id=disciplin_id)
+
+            user_difficulty, created = UserDisciplineDifficulty.objects.get_or_create(
+                user=request.user,
+                disciplin=disciplin,
+                defaults={'difficulty_block': 'NN'}
+            )
 
             final_quiz_in_progress = FinalQuizsResult.objects.filter(
                 user=request.user,
@@ -104,15 +114,17 @@ class LadderView(View):
                 is_completed=True
             ).count()
 
-            remaining_attempts = 2 - completed_attempts  # Предполагается, что всего попыток 2
+            remaining_attempts = request.user.exam_attempts - completed_attempts
 
             return render(request, self.template_name, {
                 'disciplin_id': disciplin_id,
                 'final_quiz_in_progress': final_quiz_in_progress,
-                'remaining_attempts': remaining_attempts
+                'remaining_attempts': remaining_attempts,
+                'user_difficulty': user_difficulty
             })
         else:
             return HttpResponseRedirect('/signin')
+
 
 
 
@@ -161,10 +173,18 @@ class LogoutUserView(View):
 @student_required
 def quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
-    questions = Question.objects.filter(difficulty_block=request.user.difficulty_block, disciplin=disciplin) if request.user.difficulty_block else Question.objects.filter(difficulty_block__isnull=True, disciplin=disciplin)
 
-    # Сохраняем текущий блок сложности до начала теста
-    current_difficulty = request.user.difficulty_block
+    # Получение или создание объекта UserDisciplineDifficulty
+    user_difficulty, created = UserDisciplineDifficulty.objects.get_or_create(
+        user=request.user,
+        disciplin=disciplin,
+        defaults={'difficulty_block': 'NN'}  # Значение по умолчанию, если объект создается
+    )
+
+    # Фильтрация вопросов с учетом блока сложности для данной дисциплины
+    questions = Question.objects.filter(difficulty_block=user_difficulty.difficulty_block, disciplin=disciplin)
+
+    current_difficulty = user_difficulty.difficulty_block
 
     if request.method == 'POST':
         form = QuizForm(request.POST, questions=questions)
@@ -188,7 +208,7 @@ def quiz_view(request, disciplin_id):
 
             percentage = (correct_answers_count / len(questions)) * 100
 
-            # Логика определения нового блока сложности
+            # Определение нового блока сложности
             new_block = 'NN'
             if current_difficulty == 'NN':
                 new_block = 'H1' if percentage >= 95 else 'M1' if percentage >= 70 else 'L1'
@@ -216,18 +236,20 @@ def quiz_view(request, disciplin_id):
             )
             quiz_result.save()
 
-            # Обновляем блок сложности пользователя
-            request.user.difficulty_block = new_block
-            request.user.save()
+            # Обновление блока сложности в UserDisciplineDifficulty
+            user_difficulty.difficulty_block = new_block
+            user_difficulty.save()
 
             return HttpResponseRedirect(reverse('incorrect_answers', args=[quiz_result.id]))
 
     else:
         form = QuizForm(questions=questions)
 
-    return render(request, 'main/users/quiz.html', {'questions_and_forms': zip(questions, form), 'disciplin_id': disciplin_id})
-
-
+    return render(request, 'main/users/quiz.html', {
+        'questions_and_forms': zip(questions, form),
+        'disciplin_id': disciplin_id,
+        'user_difficulty': user_difficulty  # Добавьте это
+    })
 
 
 from .models import QuizResult

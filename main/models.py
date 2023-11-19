@@ -116,3 +116,12 @@ class FinalQuizsResult(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
     total_questions_count = models.PositiveIntegerField(default=0)
+
+
+class UserDisciplineDifficulty(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    disciplin = models.ForeignKey(Disciplin, on_delete=models.CASCADE)
+    difficulty_block = models.CharField('Блок сложности', max_length=2, choices=User.difficulty_blocks, default='NN')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.disciplin.name} - {self.difficulty_block}"
