@@ -70,6 +70,10 @@ margin-bottom: 30px;
     border-radius: 10px;
 
 }
+.card:hover {
+    transform: perspective(1000px) rotateY(10deg); /* 3D-поворот при наведении */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Увеличение тени при наведении */
+}
 
 .card:last-child {
     margin-right: 0; /* убираем отступ справа у последней карточки */

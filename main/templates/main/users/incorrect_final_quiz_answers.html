@@ -4,7 +4,12 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1>Неправильные Ответы в Итоговом Тесте</h1>
+    <h1>Результаты итогового теста</h1>
+    <div class="result-info">
+        <p><strong>Оценка:</strong> {{ final_quiz_result.grade }}</p>
+        <p><strong>Правильных ответов:</strong> {{ final_quiz_result.correct_answers_count }} из {{ final_quiz_result.total_questions_count }}</p>
+    </div>
+    <h2>Некорректные ответы</h2>
     {% for item in incorrect_questions_with_answers %}
         <div class="question">
             <h2>{{ item.question.text }}</h2>
@@ -37,6 +42,27 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+h2, h1 {text-align:center;}
+.result-info {
+    background-color: #f2f2f2; /* Светло-серый фон */
+    border: 1px solid #e2e2e2; /* Тонкая серая граница */
+    border-radius: 8px; /* Скругленные углы */
+    padding: 15px; /* Внутренний отступ */
+    margin: 20px 0; /* Внешний отступ сверху и снизу */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Слабая тень */
+    text-align: center; /* Текст по центру */
+}
+
+.result-info p {
+    font-size: 18px; /* Размер шрифта */
+    color: #333; /* Темно-серый цвет текста */
+    margin: 10px 0; /* Внешний отступ сверху и снизу для каждого параграфа */
+}
+
+.result-info p strong {
+    color: #0056b3; /* Цвет для выделенных элементов (например, "Оценка:") */
+    font-weight: bold; /* Жирное начертание для выделения */
+}
 .abcd {text-align:center;}
 .question {
     border-bottom: 1px solid #ddd;
@@ -50,6 +76,7 @@
 .question h2 {
     font-size: 1.2em;
     color: #333;
+
 }
 
 .question img {

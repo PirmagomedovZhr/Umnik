@@ -89,22 +89,28 @@ class LadderView(View):
 
     def get(self, request, disciplin_id):
         if request.user.is_authenticated and request.user.position == 'Студент':
+            disciplin = Disciplin.objects.get(id=disciplin_id)
+
             final_quiz_in_progress = FinalQuizsResult.objects.filter(
                 user=request.user,
-                disciplin=Disciplin.objects.get(id=disciplin_id),
+                disciplin=disciplin,
                 is_completed=False
             ).exists()
 
+            # Подсчет количества завершенных попыток
+            completed_attempts = FinalQuizsResult.objects.filter(
+                user=request.user,
+                disciplin=disciplin,
+                is_completed=True
+            ).count()
+
+            remaining_attempts = 2 - completed_attempts  # Предполагается, что всего попыток 2
+
             return render(request, self.template_name, {
                 'disciplin_id': disciplin_id,
-                'final_quiz_in_progress': final_quiz_in_progress
+                'final_quiz_in_progress': final_quiz_in_progress,
+                'remaining_attempts': remaining_attempts
             })
-        else:
-            return HttpResponseRedirect('/signin')
-
-    def post(self, request, disciplin_id):
-        if request.user.is_authenticated and request.user.position == 'Студент':
-            return redirect('base')  # Пример перенаправления на базовую страницу
         else:
             return HttpResponseRedirect('/signin')
 
@@ -412,50 +418,30 @@ def final_quiz_view(request, disciplin_id):
     disciplin = get_object_or_404(Disciplin, id=disciplin_id)
     user = request.user
 
-    # Обновление exam_attempts пользователя на основе количества завершенных финальных тестов
-    user.exam_attempts = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin, is_completed=True).count()
-    user.save()
-
-    # Проверка, не превышено ли максимальное количество попыток
-    if user.exam_attempts >= 2:
-        return redirect('disciplin')  # Перенаправление на страницу с сообщением о достижении лимита попыток
-
-    # Проверяем, существует ли последний результат теста и не завершен ли он
-    final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).last()
-    if final_quiz_result and not final_quiz_result.is_completed:
-        time_passed = timezone.now() - final_quiz_result.start_time
-        if time_passed.total_seconds() > 10:  # Проверка на истечение времени
-            final_quiz_result.is_completed = True
-            final_quiz_result.save()
-            # Здесь можно добавить логику для перенаправления на страницу с уведомлением об истечении времени
-            return redirect('disciplin')
+    # Проверка количества завершенных попыток
+    final_quiz_attempts = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin, is_completed=True).count()
+    if final_quiz_attempts >= 2:
+        return redirect('disciplin')  # Перенаправление на страницу с ограничением попыток
 
     if request.method == 'GET':
-        # Если теста нет или он завершен, создаем новый экземпляр теста
-        if final_quiz_result is None or final_quiz_result.is_completed:
-            final_quiz_result = FinalQuizsResult.objects.create(user=user, disciplin=disciplin, start_time=timezone.now())
-            user.exam_attempts -= 1
+        # Создаем новый результат теста, если это новая попытка
+        final_quiz_result, created = FinalQuizsResult.objects.get_or_create(
+            user=user, disciplin=disciplin, is_completed=False,
+            defaults={'start_time': timezone.now()}
+        )
 
-    # Выбираем вопросы из разных блоков
     questions = []
     for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
         block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
         questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
 
     if request.method == 'POST':
-        final_quiz_result = FinalQuizsResult.objects.get(user=user, disciplin=disciplin, start_time__isnull=False)
-        time_passed = timezone.now() - final_quiz_result.start_time
-
-        if time_passed.total_seconds() > 7200:  # 7200 секунд = 2 часа
-            # Обработка истечения времени
-            return redirect('disciplin')  # Перенаправление на страницу с сообщением об истечении времени
-
+        final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).latest('start_time')
         form = FinalQuizForm(request.POST, questions=questions)
         if form.is_valid():
             correct_answers_count = 0
             incorrect_answers = []
-
-            # ...
+            total_questions_count = len(questions)
             for question in questions:
                 field_name = f'question_{question.id}'
                 user_answer_ids = form.cleaned_data.get(field_name)
@@ -464,7 +450,6 @@ def final_quiz_view(request, disciplin_id):
                     correct_answers = {str(answer.id) for answer in question.answers.filter(is_correct=True)}
                     user_answers_set = set(user_answer_ids)
 
-                    # Получаем тексты ответов по их ID
                     user_answers_texts = [answer.text for answer in question.answers.filter(id__in=user_answer_ids)]
 
                     if correct_answers == user_answers_set:
@@ -473,34 +458,35 @@ def final_quiz_view(request, disciplin_id):
                         incorrect_answers.append({'question_id': question.id, 'user_answers': user_answers_texts})
                 elif question.question_type == 'TF':
                     correct_answer = question.answers.filter(is_correct=True).first()
-                    user_answer_text = user_answer_ids  # В этом случае user_answer_ids уже содержит текст ответа
+                    user_answer_text = user_answer_ids
 
                     if correct_answer and correct_answer.text.strip().lower() == user_answer_text.strip().lower():
                         correct_answers_count += 1
                     else:
                         incorrect_answers.append({'question_id': question.id, 'user_answer': user_answer_text})
 
-            # Рассчитываем процент правильных ответов и оценку
             percentage = (correct_answers_count / len(questions)) * 100
             grade = 5 if percentage >= 90 else 4 if percentage >= 80 else 3 if percentage >= 70 else 2
 
-            # Сохраняем результат
-            FinalQuizsResult.objects.create(
-                user=user,
-                disciplin=disciplin,
-                correct_answers_count=correct_answers_count,
-                percentage=percentage,
-                grade=grade,
-                incorrect_answers=incorrect_answers
-            )
+            final_quiz_result.correct_answers_count = correct_answers_count
+            final_quiz_result.percentage = percentage
+            final_quiz_result.grade = grade
+            final_quiz_result.incorrect_answers = incorrect_answers
             final_quiz_result.is_completed = True
+            final_quiz_result.total_questions_count = total_questions_count
             final_quiz_result.save()
 
-            return redirect('disciplin')  # Перенаправляем на страницу с результатами
+            return redirect('incorrect_final_quiz', final_quiz_result_id=final_quiz_result.id)
+
     else:
         form = FinalQuizForm(questions=questions)
 
-    return render(request, 'main/users/final_quiz.html', {'form': form, 'disciplin_id': disciplin_id, 'start_time': final_quiz_result.start_time })
+    return render(request, 'main/users/final_quiz.html', {
+        'form': form,
+        'disciplin_id': disciplin_id,
+        'remaining_attempts': 2 - final_quiz_attempts,
+        'start_time': final_quiz_result.start_time
+    })
 
 
 
@@ -551,6 +537,7 @@ def incorrect_answers_view(request, quiz_result_id):
 
 def incorrect_final_quiz_view(request, final_quiz_result_id):
     final_quiz_result = get_object_or_404(FinalQuizsResult, id=final_quiz_result_id)
+
     incorrect_answers_data = final_quiz_result.incorrect_answers
 
     incorrect_questions_with_answers = []
@@ -563,13 +550,14 @@ def incorrect_final_quiz_view(request, final_quiz_result_id):
 
         incorrect_questions_with_answers.append({
             'question': question,
-            'user_answers': user_answers,  # передаем как есть, без изменений
+            'user_answers': user_answers,
             'correct_answer': correct_answers
         })
 
-    return render(request, 'main/users/incorrect_final_quiz_answers.html', {'incorrect_questions_with_answers': incorrect_questions_with_answers})
-
-
+    return render(request, 'main/users/incorrect_final_quiz_answers.html', {
+        'final_quiz_result': final_quiz_result,
+        'incorrect_questions_with_answers': incorrect_questions_with_answers
+    })
 
 def view_teacher_results(request):
     if request.user.is_authenticated and request.user.position == 'Преподаватель':
@@ -578,3 +566,18 @@ def view_teacher_results(request):
         for disciplin in teacher_disciplines:
             results.extend(FinalQuizsResult.objects.filter(disciplin=disciplin))
         return render(request, 'main/admin/results.html', {'results': results})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

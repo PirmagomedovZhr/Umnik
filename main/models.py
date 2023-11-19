@@ -115,3 +115,4 @@ class FinalQuizsResult(models.Model):
     incorrect_answers = models.JSONField(default=list)
     start_time = models.DateTimeField(null=True, blank=True)
     is_completed = models.BooleanField(default=False)
+    total_questions_count = models.PositiveIntegerField(default=0)

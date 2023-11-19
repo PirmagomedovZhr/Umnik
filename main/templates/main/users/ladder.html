@@ -51,23 +51,82 @@
         <button onclick="location.href='{% url 'discipline_results' disciplin_id %}'">ПЕРЕЙТИ</button>
 </div>
     </div>
-
+<div id="examModal" style="display: none;">
+    <p>Ваши попытки прохождения экзамена исчерпаны.</p>
+    <button onclick="closeModal()">Закрыть</button>
+</div>
 
 <script>
 function confirmExamStart(url) {
-    // Проверка, идет ли сейчас тест
-    {% if not final_quiz_in_progress %}  // Предполагается, что вы передали это значение из Django в шаблон
-    if (confirm("Вы точно хотите начать итоговый тест?")) {
+    {% if final_quiz_in_progress %}
         window.location.href = url;
-    }
     {% else %}
-    window.location.href = url;  // Непосредственное перенаправление, если тест уже идет
+        {% if remaining_attempts <= 0 %}
+            document.getElementById('examModal').style.display = 'block';
+            document.body.classList.add('overlay');
+        {% else %}
+            if (confirm("Вы точно хотите начать итоговый тест?")) {
+                window.location.href = url;
+            }
+        {% endif %}
     {% endif %}
+}
+
+function closeModal() {
+    document.getElementById('examModal').style.display = 'none';
+    document.body.classList.remove('overlay');
 }
 </script>
 
 
+
+
 <style>
+#examModal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 300px;
+    text-align: center;
+}
+
+#examModal p {
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+
+#examModal button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#examModal button:hover {
+    background-color: #0056b3;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
     body {
     font-family: Arial, sans-serif;
     margin: 0;

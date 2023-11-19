@@ -1,30 +1,34 @@
+
+
 {% extends 'main/users/home.html' %}
 {% load static %}
 {% block title %}
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/quiz.css' %}" />
 {% endblock %}
 {% block content %}
-    <div class="abcd"><h1>Итоговое тестирование</h1>
-{% if remaining_time %}
-    <p>Оставшееся время на тест: {{ remaining_time }}</p></div>
-{% endif %}
-<main class="main js-main-quiz">
-<div id="timer" class="timer"></div>
-    <form method="post" class="quiz-form">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="question">
-                {{ field.label_tag }}
-                {% if field.field.widget.attrs.image_url %}
-                    <img src="{{ field.field.widget.attrs.image_url }}" alt="Image for {{ field.label }}" class="question-image">
-                {% endif %}
-                {{ field }}
+    <div class="abcd">
+        <h1>Итоговое тестирование</h1>
+        <p>Оставшиеся попытки: {{ remaining_attempts }}</p>
+        <p>Начало теста: {{ start_time }}</p>
+    </div>
+    <main class="main js-main-quiz">
+        <div id="timer" class="timer"></div>
+        <form method="post" class="quiz-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="question">
+                    {{ field.label_tag }}
+                    {% if field.field.widget.attrs.image_url %}
+                        <img src="{{ field.field.widget.attrs.image_url }}" alt="Image for {{ field.label }}" class="question-image">
+                    {% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <div class="abcd">
+                <button type="submit" class="submit-button">Завершить тест</button>
             </div>
-        {% endfor %}
-        <div class="abcd">
-        <button type="submit" class="submit-button">Завершить тест</button></div>
-    </form>
-</main>
+        </form>
+    </main>
 <style>
     .timer {
     display: flex;
@@ -115,7 +119,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var startTime = {{ start_time|date:"U" }};
-    var duration = 7200;
+    var duration = 60;
     var endTime = startTime + duration;
 
 
@@ -148,9 +152,11 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     var interval = setInterval(countdown, 1000);
+    document.querySelector('.submit-button').addEventListener('click', function() {
+        clearInterval(interval); // Останавливаем таймер
+        document.querySelector('.quiz-form').submit();
+    });
 });
+
 </script>
-
-
-
 {% endblock %}
