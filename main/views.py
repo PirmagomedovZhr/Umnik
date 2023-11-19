@@ -452,12 +452,16 @@ def final_quiz_view(request, disciplin_id):
             defaults={'start_time': timezone.now()}
         )
 
+
     questions = []
     for block in ['L1', 'L2', 'M1', 'M2', 'H1', 'H2']:
         block_questions = Question.objects.filter(difficulty_block=block, disciplin=disciplin)
         questions.extend(random.sample(list(block_questions), min(5, block_questions.count())))
-
+    question_ids = [q.id for q in questions]
+    request.session['question_ids'] = question_ids
     if request.method == 'POST':
+        question_ids = request.session.get('question_ids')
+        questions = Question.objects.filter(id__in=question_ids)
         print(request.POST)
         final_quiz_result = FinalQuizsResult.objects.filter(user=user, disciplin=disciplin).latest('start_time')
         form = FinalQuizForm(request.POST, questions=questions)
