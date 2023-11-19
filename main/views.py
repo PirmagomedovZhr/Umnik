@@ -501,8 +501,11 @@ def final_quiz_view(request, disciplin_id):
             final_quiz_result.total_questions_count = total_questions_count
             final_quiz_result.save()
 
+
             return redirect('incorrect_final_quiz', final_quiz_result_id=final_quiz_result.id)
 
+        else:
+            print("Форма невалидна:", form.errors)
     else:
         form = FinalQuizForm(questions=questions)
 
