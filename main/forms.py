@@ -141,10 +141,17 @@ class FinalQuizForm(forms.Form):
             if question.question_type == 'MC':
                 choices = [(answer.id, answer.text) for answer in question.answers.all()]
                 self.fields[field_name] = forms.MultipleChoiceField(
-                    choices=choices, widget=forms.CheckboxSelectMultiple, label=question.text)
+                    choices=choices,
+                    widget=forms.CheckboxSelectMultiple,
+                    label=question.text,
+                    required=False  # Позволяем пустые ответы
+                )
             elif question.question_type == 'TF':
                 self.fields[field_name] = forms.CharField(
-                    widget=forms.TextInput, label=question.text)
+                    widget=forms.TextInput,
+                    label=question.text,
+                    required=False  # Позволяем пустые ответы
+                )
 
             # Добавление URL изображения как атрибута поля
             if question.image:

@@ -31,6 +31,11 @@
             element.textContent = text;
         });
     });
+</script><script>
+    window.history.pushState(null, "", window.location.href); // Добавляем текущее состояние в историю браузера
+    window.onpopstate = function () {
+        window.history.go(1); // Отменяем действие кнопки "Назад" и переходим вперед в истории браузера
+    };
 </script>
 
 <style>.container {

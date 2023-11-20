@@ -451,6 +451,10 @@ def final_quiz_view(request, disciplin_id):
         defaults={'start_time': timezone.now()}
     )
 
+    # Проверяем, завершен ли уже этот экземпляр теста
+    if final_quiz_result.is_completed:
+        # Если тест завершен, перенаправляем на страницу результатов или на другую страницу
+        return redirect('disciplin')
     if request.method == 'POST':
         question_ids = request.session.get('question_ids')
         questions = Question.objects.filter(id__in=question_ids)
@@ -484,7 +488,6 @@ def final_quiz_view(request, disciplin_id):
             final_quiz_result.is_completed = True
             final_quiz_result.total_questions_count = len(questions)
             final_quiz_result.save()
-
             return redirect('incorrect_final_quiz', final_quiz_result_id=final_quiz_result.id)
         else:
             print("Форма невалидна:", form.errors)
