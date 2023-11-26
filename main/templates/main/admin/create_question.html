@@ -8,7 +8,9 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="for_button">   <button type="submit" class="create-group-btn">Создать</button></div>
+        <div class="for_button"><button type="submit" class="create-group-btn">Создать</button>
+        <a href="{% url 'homesss' %}" class="create-group-btn">Вернуться</a><br>
+</div>
     </form>
     </main>
 {% endblock %}

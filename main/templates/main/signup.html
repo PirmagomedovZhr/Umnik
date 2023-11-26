@@ -15,24 +15,11 @@
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
 <div class="registration-cssave">
-    {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
-                    <strong>Пароли не совпадают</strong>
-                </div>
-            {% endfor %}
-        {% endif %}
     <form class="form-signin" method="post" action="{% url 'signup' %}">
             {% csrf_token %}
             <h1 class="text-center">Регистрация</h1>
                     {{ form.username }} <br>
+                    {{ form.group_for_USER }} <br>
                     {{ form.first_name}} <br>
                     {{ form.last_name}} <br>
                     {{ form.password }} <br>
@@ -47,7 +34,77 @@
                             </div>
 
         </form>
+    <div id="errorModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="errorText"></p>
+  </div>
 </div>
+</div>
+<style>.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+  <script>
+window.onload = function() {
+    var modal = document.getElementById("errorModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    // Проверка наличия ошибок в поле group_for_USER
+    {% if form.group_for_USER.errors %}
+        var errorText = "";
+        {% for error in form.group_for_USER.errors %}
+            errorText += "<strong>{{ error|escape }}</strong><br>";
+        {% endfor %}
+        document.getElementById("errorText").innerHTML = errorText;
+        modal.style.display = "block";
+    {% endif %}
+
+    // Закрытие модального окна
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Закрытие модального окна при клике вне его
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+};
+
+</script>
+
 </body>
 </html>
 

@@ -5,6 +5,30 @@
 {% block content %}
 <div class="table-container">
     <h1>Результаты экзаменов</h1>
+
+    <!-- Форма фильтрации -->
+    <form method="get" class="filter-form">
+        <label for="discipline">Дисциплина:</label>
+        <select name="discipline" id="discipline">
+            <option value="">Все</option>
+            {% for discipline in disciplines %}
+                <option value="{{ discipline.name }}" {% if request.GET.discipline == discipline.name %}selected{% endif %}>{{ discipline.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="group">Группа:</label>
+        <select name="group" id="group">
+            <option value="">Все</option>
+            {% for group in groups %}
+                <option value="{{ group }}" {% if request.GET.group == group %}selected{% endif %}>{{ group }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Фильтровать</button>
+        <button type="submit" formaction="{% url 'generate_excel' %}">Сгенерировать ведомость</button>
+    </form>
+
+    <!-- Таблица результатов -->
     <table class="results-table">
         <thead>
             <tr>
@@ -20,7 +44,7 @@
                 <tr>
                     <td>{{ result.user.last_name }}</td>
                     <td>{{ result.user.first_name }}</td>
-                    <td>{{ result.disciplin.groups.name }}</td>
+                    <td>{{ result.user.group_for_USER }}</td>
                     <td>{{ result.disciplin.name }}</td>
                     <td>{{ result.grade }}</td>
                 </tr>
@@ -32,11 +56,12 @@
         </tbody>
     </table>
 </div>
+
 <style>
     .table-container {
         width: 80%;
         margin: auto;
-        overflow-x: auto; /* Для горизонтальной прокрутки при большой ширине таблицы */
+        overflow-x: auto;
     }
     .results-table {
         width: 100%;
@@ -44,6 +69,7 @@
         text-align: left;
         margin: 20px 0;
     }
+    /* Дополнительные стили */
     .results-table th, .results-table td {
         border: 1px solid #ddd;
         padding: 8px;
@@ -59,7 +85,14 @@
         background-color: #ddd;
     }
     h1 {
-    text-align:center;
+        text-align: center;
+    }
+    .filter-form {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .filter-form select, .filter-form button {
+        margin: 0 10px;
     }
 </style>
 {% endblock %}

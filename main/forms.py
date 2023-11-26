@@ -1,6 +1,6 @@
 from django import forms
-from .models import User, Groups, Disciplin, Topic
-
+from .models import User, Disciplin, Topic
+from django.core.validators import RegexValidator
 
 class TopicForm(forms.ModelForm):
     class Meta:
@@ -16,7 +16,7 @@ class TopicForm(forms.ModelForm):
             field.widget.attrs['placeholder'] = field.label
             field.label = ""
 
-
+import re
 
 class SignUpForm(forms.Form):
     username = forms.CharField(
@@ -79,6 +79,20 @@ class SignUpForm(forms.Form):
                 "Пароли не совпадают"
             )
 
+    group_for_USER = forms.CharField(
+        max_length=4,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': "form-control mt-2",
+            'placeholder': "Группа (например, Y033)"
+        })
+    )
+
+    def clean_group_for_USER(self):
+        group = self.cleaned_data['group_for_USER']
+        if not re.match('^[A-Z][0-9]{3}$', group):
+            raise forms.ValidationError("Неверный формат. Формат группы должен быть: одна заглавная буква и три цифры (например, Y033)")
+        return group
     def save(self):
         user = User.objects.create_user(
             username=self.cleaned_data['username'],
@@ -87,6 +101,7 @@ class SignUpForm(forms.Form):
             last_name=self.cleaned_data['last_name'],
             is_active=True,
             position=self.cleaned_data["position"],
+            group_for_USER=self.cleaned_data['group_for_USER']
         )
         return user
 
@@ -160,28 +175,10 @@ class FinalQuizForm(forms.Form):
 
 
 
-class GroupForm(forms.ModelForm):
-    name = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Введите название группы'}),
-        label=''  # это уберет метку 'name'
-    )
-
-    class Meta:
-        model = Groups
-        fields = ['name']
-
-
 class DisciplineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(DisciplineForm, self).__init__(*args, **kwargs)
-
-        self.fields['groups'].queryset = Groups.objects.filter(user=user)
-        self.fields['groups'].widget.attrs.update({
-            'class': 'custom-select',
-            'placeholder': 'Выберите группу',
-        })
-        self.fields['groups'].label = ""  # убираем метку
 
         self.fields['name'].widget.attrs.update({'placeholder': 'Введите название'})  # placeholder для поля name
         self.fields['name'].label = ""  # убираем метку
@@ -193,7 +190,7 @@ class DisciplineForm(forms.ModelForm):
         self.fields['image'].label = "Выберите фотографию для дисциплины"  # убираем метку
     class Meta:
         model = Disciplin
-        fields = ['name', 'token', 'groups', 'image']
+        fields = ['name', 'token', 'image']
 
 
 
@@ -235,7 +232,7 @@ class QuestionForm(forms.ModelForm):
 
 
     def label_from_instance(self, obj):
-        return f"{obj.name} ({obj.groups.name})"
+        return f"{obj.name}"
 
 
 

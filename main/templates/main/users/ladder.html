@@ -39,7 +39,7 @@
         <p></p>
         <img src="{% static '4321.png' %}" alt="Image">
       <div class="button-wrapper">
-        <button onclick="confirmExamStart('{% url 'final_quiz' disciplin_id %}')">ПЕРЕЙТИ</button>
+        <button onclick="confirmExamStart('{% url 'final_quiz' disciplin_id %}', {{ disciplin_id }})">Перейти</button>
 </div>
     </div>
 
@@ -57,19 +57,30 @@
 </div>
 
 <script>
-function confirmExamStart(url) {
-    {% if final_quiz_in_progress %}
-        window.location.href = url;
-    {% else %}
-        {% if remaining_attempts <= 0 %}
-            document.getElementById('examModal').style.display = 'block';
-            document.body.classList.add('overlay');
+var isExamInProgress = {% if user.is_exam_in_progress == 1 %}true{% else %}false{% endif %};
+
+function confirmExamStart(url, currentDisciplinId) {
+    console.log("Текущий ID дисциплины экзамена пользователя:", {{ user.current_exam_disciplin_id }});
+    console.log("ID дисциплины, на которую переходят:", currentDisciplinId);
+    console.log("Текущий статус экзамена (JavaScript):", isExamInProgress);
+
+    if (isExamInProgress && {{ user.current_exam_disciplin_id }} != currentDisciplinId) {
+        alert("Вы не можете начать новый экзамен по другой дисциплине, пока не завершили текущий.");
+    } else {
+        // Существующая логика
+        {% if final_quiz_in_progress %}
+            window.location.href = url;
         {% else %}
-            if (confirm("Вы точно хотите начать итоговый тест?")) {
-                window.location.href = url;
-            }
+            {% if remaining_attempts <= 0 %}
+                document.getElementById('examModal').style.display = 'block';
+                document.body.classList.add('overlay');
+            {% else %}
+                if (confirm("Вы точно хотите начать итоговый тест?")) {
+                    window.location.href = url;
+                }
+            {% endif %}
         {% endif %}
-    {% endif %}
+    }
 }
 
 function closeModal() {
@@ -77,6 +88,8 @@ function closeModal() {
     document.body.classList.remove('overlay');
 }
 </script>
+
+
 
 
 

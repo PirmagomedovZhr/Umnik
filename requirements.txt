@@ -7,3 +7,6 @@ sqlparse==0.4.3
 Pillow==10.0.1
 openai
 requests
+reportlab
+pandas
+openpyxl

@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from .forms import SignUpForm, SignInForm, QuizForm, GroupForm, DisciplineForm, TokenForm, TopicForm
+from .forms import SignUpForm, SignInForm, QuizForm, DisciplineForm, TokenForm, TopicForm
 from django.contrib.auth import login, authenticate, logout
 from django.views import View
 from django.shortcuts import get_object_or_404
@@ -32,6 +32,7 @@ def student_required(view_func):
         else:
             return redirect('base')  # Замените 'base' на URL вашей базовой страницы
     return _wrapped_view
+
 
 class SignUpView(View):
     def get(self, request, *args, **kwargs):
@@ -287,33 +288,6 @@ def result_view(request):
 
 
 @teacher_required
-def create_group(request):
-    if request.method == 'POST':
-        form = GroupForm(request.POST)
-        if form.is_valid():
-            group = form.save(commit=False)
-            group.user = request.user
-            group.save()
-            return redirect('homesss')
-    else:
-        form = GroupForm()
-
-    if request.user.position == 'Преподаватель':
-        template_name = 'main/admin/create_group.html'
-        context = {'form': form}
-    elif request.user.position == 'Студент':
-        template_name = 'main/users/base.html'
-        topics = Topic.objects.all()
-        user_disciplines = request.user.disciplines.all()
-        context = {'form': form, 'topics': topics, 'user_disciplines': user_disciplines}
-    else:
-        return HttpResponseForbidden("У вас нет прав доступа к этой странице.")
-
-    return render(request, template_name, context)
-
-
-
-@teacher_required
 def create_discipline(request):
     if request.method == 'POST':
         form = DisciplineForm(request.POST, request.FILES, user=request.user)  # Изменение здесь
@@ -455,6 +429,9 @@ def final_quiz_view(request, disciplin_id):
     if final_quiz_result.is_completed:
         # Если тест завершен, перенаправляем на страницу результатов или на другую страницу
         return redirect('disciplin')
+    user.current_exam_disciplin_id = disciplin_id
+    user.is_exam_in_progress = 1
+    user.save()
     if request.method == 'POST':
         question_ids = request.session.get('question_ids')
         questions = Question.objects.filter(id__in=question_ids)
@@ -488,6 +465,9 @@ def final_quiz_view(request, disciplin_id):
             final_quiz_result.is_completed = True
             final_quiz_result.total_questions_count = len(questions)
             final_quiz_result.save()
+            user.current_exam_disciplin_id = 0
+            user.is_exam_in_progress = 0
+            user.save()
             return redirect('incorrect_final_quiz', final_quiz_result_id=final_quiz_result.id)
         else:
             print("Форма невалидна:", form.errors)
@@ -584,22 +564,70 @@ def incorrect_final_quiz_view(request, final_quiz_result_id):
         'incorrect_questions_with_answers': incorrect_questions_with_answers
     })
 
+from django.shortcuts import render
+from .models import User, FinalQuizsResult, Disciplin
+
 def view_teacher_results(request):
     if request.user.is_authenticated and request.user.position == 'Преподаватель':
         teacher_disciplines = Disciplin.objects.filter(user=request.user)
-        results = []
-        for disciplin in teacher_disciplines:
-            results.extend(FinalQuizsResult.objects.filter(disciplin=disciplin))
-        return render(request, 'main/admin/results.html', {'results': results})
+        results = FinalQuizsResult.objects.filter(disciplin__in=teacher_disciplines)
+
+        # Фильтрация по дисциплине
+        selected_discipline = request.GET.get('discipline')
+        if selected_discipline:
+            results = results.filter(disciplin__name=selected_discipline)
+
+        # Фильтрация по группе
+        selected_group = request.GET.get('group')
+        if selected_group:
+            results = results.filter(user__group_for_USER=selected_group)
+
+        disciplines = Disciplin.objects.all()  # Получение всех дисциплин
+        groups = User.objects.values_list('group_for_USER', flat=True).distinct()  # Получение всех групп
+
+        return render(request, 'main/admin/results.html', {
+            'results': results,
+            'disciplines': disciplines,
+            'groups': groups
+        })
 
 
-
-from .script import copy_questions
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
 from django.http import HttpResponse
 
-def run_script_view(request):
-    copy_questions("Информатика", "Программирование")
-    return HttpResponse("Скрипт выполнен успешно.")
+def get_filtered_results(user, discipline, group):
+    teacher_disciplines = Disciplin.objects.filter(user=user)
+    results = FinalQuizsResult.objects.filter(disciplin__in=teacher_disciplines)
+
+    if discipline:
+        results = results.filter(disciplin__name=discipline)
+
+    if group:
+        results = results.filter(user__group_for_USER=group)
+
+    return results
+
+import pandas as pd
+from django.http import HttpResponse
+
+def generate_excel(request):
+    results = get_filtered_results(request.user, request.GET.get('discipline', ''), request.GET.get('group', ''))
+
+    # Формирование данных для Excel
+    data = [(r.user.last_name, r.user.first_name, r.user.group_for_USER, r.disciplin.name, r.grade) for r in results]
+    df = pd.DataFrame(data, columns=['Фамилия', 'Имя', 'Группа', 'Дисциплина', 'Оценка'])
+
+    # Создание ответа Excel
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="results.xlsx"'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+
+    return response
+
 
 
 

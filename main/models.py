@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.utils import timezone
-
+from django.core.validators import RegexValidator
 
 class User(AbstractUser):
     positions = (
@@ -24,18 +24,13 @@ class User(AbstractUser):
     difficulty_block = models.CharField('Блок сложности', max_length=2, choices=difficulty_blocks, default='NN', blank=True)
     disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
     exam_attempts = models.PositiveIntegerField(default=2)
-
-class Groups(models.Model):
-    name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_groups')
-
-    def __str__(self):
-        return self.name
+    group_for_USER = models.CharField('Группа', max_length=4)
+    is_exam_in_progress = models.IntegerField(null=True, blank=True)
+    current_exam_disciplin_id = models.IntegerField(null=True, blank=True)
 
 
 class Disciplin(models.Model):
     name = models.CharField(max_length=100)
-    groups = models.ForeignKey(Groups, on_delete=models.CASCADE)
     token = models.CharField(max_length=10)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='discipline_images/', null=True, blank=True)  # новое поле для изображения

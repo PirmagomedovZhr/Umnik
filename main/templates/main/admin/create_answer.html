@@ -9,7 +9,9 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="for_button">   <button type="submit" class="create-group-btn">Создать</button></div>
+        <div class="for_button">   <button type="submit" class="create-group-btn">Создать</button>
+        <a href="{% url 'homesss' %}" class="create-group-btn">Главная</a></div>
+
     </form>
     </main>
 {% endblock %}

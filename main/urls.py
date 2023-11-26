@@ -11,7 +11,6 @@ urlpatterns = [
     path('logout/', LogoutUserView.as_view(), name='logout'),#Выход
     path('topics/<int:topic_id>/', views.topic_detail, name='topic_detail'),  # Изменено здесь
     path('quiz/<int:disciplin_id>/', views.quiz_view, name='quiz'),
-    path('create_group/', views.create_group, name='create_group'),
     path('create_discipline/', views.create_discipline, name='create_discipline'),
     path('homesss/', views.homesss, name='homesss'),
     path('create_question/', views.create_question, name='create_question'),
@@ -30,5 +29,6 @@ path('incorrect_answers/<int:quiz_result_id>/', views.incorrect_answers_view, na
 path('incorrect_final_quiz/<int:final_quiz_result_id>/', views.incorrect_final_quiz_view, name='incorrect_final_quiz'),
 path('results/', views.view_teacher_results, name='view_teacher_results'),
 path('download/<int:topic_id>/', views.download_file, name='download_file'),
-    path('run-script/', views.run_script_view, name='run-script'),
+path('generate_excel/', views.generate_excel, name='generate_excel'),
+
 ]
