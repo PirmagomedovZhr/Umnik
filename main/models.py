@@ -25,8 +25,8 @@ class User(AbstractUser):
     disciplines = models.ManyToManyField('Disciplin', related_name='users', blank=True)
     exam_attempts = models.PositiveIntegerField(default=2)
     group_for_USER = models.CharField('Группа', max_length=4)
-    is_exam_in_progress = models.IntegerField(null=True, blank=True)
-    current_exam_disciplin_id = models.IntegerField(null=True, blank=True)
+    is_exam_in_progress = models.IntegerField(default=0, null=True, blank=True)
+    current_exam_disciplin_id = models.IntegerField(default=0, null=True, blank=True)
 
 
 class Disciplin(models.Model):
